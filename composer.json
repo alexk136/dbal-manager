@@ -1,0 +1,32 @@
+{
+  "name": "itech/dbal-bundle",
+  "description": "Dbal bundle",
+  "type": "symfony-bundle",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "aleksandr.k",
+      "email": "aleksandr.k@itechpsp.com"
+    }
+  ],
+  "require": {
+    "php": "~8.2",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "doctrine/doctrine-bundle": "^2.14",
+    "symfony/config": "^7.2",
+    "symfony/dependency-injection": "^7.2",
+    "symfony/http-kernel": "^7.2",
+    "doctrine/dbal": "^4.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "ITech\\DbalBundle\\": ""
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "symfony/flex": true
+    }
+  }
+}
