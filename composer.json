@@ -24,6 +24,11 @@
       "ITech\\DbalBundle\\": ""
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "ITech\\Tests\\": "tests/"
+    }
+  },
   "config": {
     "allow-plugins": {
       "symfony/flex": true
