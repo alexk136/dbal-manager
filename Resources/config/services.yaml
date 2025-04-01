@@ -1,0 +1,15 @@
+parameters:
+    dbal.transaction_isolation_level: !php/const Doctrine\DBAL\TransactionIsolationLevel::REPEATABLE_READ
+
+services:
+    ITech\DbalBundle\Manager\DbalManager:
+        arguments:
+            - '@Doctrine\DBAL\Connection'
+            - '@ITech\DbalBundle\Utils\DtoDeserializer'
+
+    ITech\DbalBundle\Service\TransactionService:
+        arguments:
+            - '@Doctrine\DBAL\Connection'
+            - '%dbal.transaction_isolation_level%'
+    ITech\DbalBundle\Service\TransactionServiceInterface:
+        alias: ITech\DbalBundle\Service\TransactionService\TransactionService

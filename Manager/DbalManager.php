@@ -11,12 +11,13 @@ use ITech\DbalBundle\Utils\DtoDeserializer;
 final class DbalManager
 {
     public function __construct(
-        protected Connection      $connection,
+        protected Connection $connection,
         protected DtoDeserializer $deserializer,
-    ) {}
+    ) {
+    }
 
     /**
-     * Выполнить SELECT и получить массив DTO
+     * Выполнить SELECT и получить массив DTO.
      * @throws Exception
      */
     public function fetchAll(string $sql, array $params = [], ?string $dtoClass = null): iterable
@@ -31,7 +32,7 @@ final class DbalManager
     }
 
     /**
-     * Выполнить SELECT и получить одну запись
+     * Выполнить SELECT и получить одну запись.
      * @throws Exception
      */
     public function fetchOne(string $sql, array $params = [], ?string $dtoClass = null): object|array|null
@@ -57,7 +58,7 @@ final class DbalManager
     }
 
     /**
-     * Упрощённая вставка
+     * Упрощённая вставка.
      * @throws Exception
      */
     public function insert(string $table, array $data): void
@@ -66,7 +67,7 @@ final class DbalManager
     }
 
     /**
-     * Упрощённое обновление
+     * Упрощённое обновление.
      * @throws Exception
      */
     public function update(string $table, array $data, array $criteria): void
@@ -75,7 +76,7 @@ final class DbalManager
     }
 
     /**
-     * Удаление строк
+     * Удаление строк.
      * @throws Exception
      */
     public function delete(string $table, array $criteria): void
@@ -84,7 +85,7 @@ final class DbalManager
     }
 
     /**
-     * Получить подключение к БД (например, для работы с транзакциями напрямую)
+     * Получить подключение к БД (например, для работы с транзакциями напрямую).
      */
     public function getConnection(): Connection
     {

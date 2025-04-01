@@ -12,6 +12,18 @@ class Configuration
     {
         $treeBuilder = new TreeBuilder('doctrine_dbal');
 
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode
+            ->children()
+            // Переопределение стандартных имён полей (id -> uid)
+            ->arrayNode('field_names')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                    ->scalarNode('id')->defaultValue('id')->end()
+                ->end()
+            ->end()
+        ;
+
         return $treeBuilder;
     }
 }

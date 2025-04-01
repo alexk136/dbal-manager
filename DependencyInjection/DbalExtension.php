@@ -14,9 +14,13 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class DbalExtension extends Extension implements PrependExtensionInterface
 {
-
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter('doctrine_dbal.field_names', $config['field_names']);
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../Resources/config'));
         $loader->load('services.yaml');
     }
