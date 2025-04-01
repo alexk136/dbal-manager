@@ -26,7 +26,7 @@ final class DbalManager
 
         while ($row = $stmt->fetchAssociative()) {
             yield $dtoClass
-                ? $this->deserializer->deserialize($row, $dtoClass)
+                ? $this->deserializer->denormalize($row, $dtoClass)
                 : $row;
         }
     }
@@ -44,7 +44,7 @@ final class DbalManager
         }
 
         return $dtoClass
-            ? $this->deserializer->deserialize($row, $dtoClass)
+            ? $this->deserializer->denormalize($row, $dtoClass)
             : $row;
     }
 

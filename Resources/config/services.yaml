@@ -1,5 +1,7 @@
 parameters:
     dbal.transaction_isolation_level: !php/const Doctrine\DBAL\TransactionIsolationLevel::REPEATABLE_READ
+    dbal.use_auto_mapper: false
+    dbal.default_dto_group:
 
 services:
     ITech\DbalBundle\Manager\DbalManager:
@@ -13,3 +15,20 @@ services:
             - '%dbal.transaction_isolation_level%'
     ITech\DbalBundle\Service\TransactionServiceInterface:
         alias: ITech\DbalBundle\Service\TransactionService\TransactionService
+
+    ITech\DbalBundle\Utils\SymfonyDtoDeserializer:
+        arguments:
+            $defaultGroup: '%dbal.default_dto_group%'
+
+    ITech\DbalBundle\Utils\AutoMapperDtoDeserializer:
+        arguments:
+            $autoMapper: '@?AutoMapper\AutoMapperInterface'
+
+    ITech\DbalBundle\Utils\DtoDeserializer:
+        arguments:
+            $symfonyDeserializer: '@ITech\DbalBundle\Utils\SymfonyDtoDeserializer'
+            $autoMapperDeserializer: '@?ITech\DbalBundle\Utils\AutoMapperDtoDeserializer'
+            $useAutoMapper: '%dbal.use_auto_mapper%'
+
+    ITech\DbalBundle\Utils\DtoDeserializerInterface:
+        alias: ITech\DbalBundle\Utils\DtoDeserializer

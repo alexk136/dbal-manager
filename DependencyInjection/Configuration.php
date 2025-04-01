@@ -22,6 +22,16 @@ class Configuration
                     ->scalarNode('id')->defaultValue('id')->end()
                 ->end()
             ->end()
+
+            // Включение AutoMapper
+            ->booleanNode('use_auto_mapper')
+                ->defaultFalse()
+            ->end()
+
+            // Группа десериализации для Symfony Serializer
+            ->scalarNode('default_dto_group')
+                ->defaultNull()
+            ->end()
         ;
 
         return $treeBuilder;
