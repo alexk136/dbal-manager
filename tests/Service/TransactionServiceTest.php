@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Service;
+namespace ITech\Bundle\DbalBundle\Tests\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\TransactionIsolationLevel;
-use ITech\DbalBundle\Service\TransactionService;
+use ITech\Bundle\DbalBundle\Service\TransactionService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

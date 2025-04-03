@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Utils;
+namespace ITech\Bundle\DbalBundle\Tests\Utils;
 
-use ITech\DbalBundle\Utils\SymfonyDtoDeserializer;
+use ITech\Bundle\DbalBundle\Utils\SymfonyDtoDeserializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;

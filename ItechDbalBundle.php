@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Itech\DbalBundle\DbalBundle;
+namespace ITech\Bundle\DbalBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class DbalBundle extends Bundle
+class ItechDbalBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {

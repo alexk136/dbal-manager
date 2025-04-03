@@ -5,12 +5,12 @@
   "license": "proprietary",
   "authors": [
     {
-      "name": "aleksandr.k",
+      "name": "Alex",
       "email": "aleksandr.k@itechpsp.com"
     }
   ],
   "require": {
-    "php": "~8.2",
+    "php": "~8.3",
     "ext-pdo": "*",
     "ext-json": "*",
     "doctrine/doctrine-bundle": "^2.14",
@@ -23,12 +23,12 @@
   },
   "autoload": {
     "psr-4": {
-      "ITech\\DbalBundle\\": ""
+      "ITech\\Bundle\\DBALBundle\\": ""
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "ITech\\Tests\\": "tests/"
+      "ITech\\Bundle\\DBALBundle\\Tests\\": "tests/"
     }
   },
   "config": {

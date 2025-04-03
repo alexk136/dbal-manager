@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\DbalBundle\Manager;
+namespace ITech\Bundle\DbalBundle\Manager;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use ITech\DbalBundle\Utils\DtoDeserializer;
+use ITech\Bundle\DbalBundle\Utils\DtoDeserializer;
 
 final class DbalManager
 {

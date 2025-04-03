@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\DbalBundle\Service;
+namespace ITech\Bundle\DbalBundle\Service;
 
 use Closure;
 use Doctrine\DBAL\Connection;

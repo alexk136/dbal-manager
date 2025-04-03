@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\DbalBundle\Utils;
+namespace ITech\Bundle\DbalBundle\Utils;
 
 use AutoMapper\AutoMapperInterface;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\DbalBundle\DependencyInjection;
+namespace ITech\Bundle\DbalBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
