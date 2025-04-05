@@ -7,8 +7,8 @@ namespace ITech\Bundle\DbalBundle\Utils;
 final readonly class DtoDeserializer implements DtoDeserializerInterface
 {
     public function __construct(
-        private SymfonyDtoDeserializer $symfonyDeserializer,
-        private ?AutoMapperDtoDeserializer $autoMapperDeserializer = null,
+        private DtoDeserializerInterface $symfonyDeserializer,
+        private ?AutoMapperDtoDeserializer $autoMapperDeserializer = null, // Move under interface
         private bool $useAutoMapper = false,
     ) {
     }

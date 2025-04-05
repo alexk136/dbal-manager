@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\DependencyInjection;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Configuration as DoctrineConfiguration;
-use ITech\Bundle\DbalBundle\DBAL\DbalConnection;
+use ITech\Bundle\DBALBundle\DBAL\DbalConnection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class DbalExtension extends Extension implements PrependExtensionInterface
+class ItechDbalExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -21,16 +21,17 @@ class DbalExtension extends Extension implements PrependExtensionInterface
 
         $container->setParameter('doctrine_dbal.field_names', $config['field_names']);
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
     }
 
     public function prepend(ContainerBuilder $container): void
     {
         $doctrineConfigs = $container->getExtensionConfig('doctrine');
-        $configuration = new DoctrineConfiguration((bool) $container->getParameter('kernel.debug'));
 
+        $configuration = new DoctrineConfiguration((bool) $container->getParameter('kernel.debug'));
         $doctrineConfig = $this->processConfiguration($configuration, $doctrineConfigs);
+
         $dbalConfig = $doctrineConfig['dbal'] ?? [];
 
         $wrapperConfig = [];
