@@ -6,13 +6,13 @@ namespace ITech\Bundle\DbalBundle\Manager;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use ITech\Bundle\DbalBundle\Utils\DtoDeserializer;
+use ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface;
 
 final class DbalManager
 {
     public function __construct(
         protected Connection $connection,
-        protected DtoDeserializer $deserializer,
+        protected DtoDeserializerInterface $deserializer,
     ) {
     }
 

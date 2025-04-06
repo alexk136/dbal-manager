@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\DependencyInjection;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Configuration as DoctrineConfiguration;
-use ITech\Bundle\DBALBundle\DBAL\DbalConnection;
+use ITech\Bundle\DbalBundle\DBAL\DbalConnection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;

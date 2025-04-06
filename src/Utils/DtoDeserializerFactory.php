@@ -1,0 +1,22 @@
+<?php
+
+namespace ITech\Bundle\DbalBundle\Utils;
+
+final readonly class DtoDeserializerFactory
+{
+    public function __construct(
+        private SymfonyDtoDeserializer $symfonyDeserializer,
+        private ?AutoMapperDtoDeserializer $autoMapperDeserializer = null,
+        private bool $useAutoMapper = false,
+    ) {
+    }
+
+    public function create(): DtoDeserializerInterface
+    {
+        $deserializer = $this->useAutoMapper && $this->autoMapperDeserializer !== null
+            ? $this->autoMapperDeserializer
+            : $this->symfonyDeserializer;
+
+        return new DtoDeserializer($deserializer);
+    }
+}
