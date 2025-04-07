@@ -5,6 +5,7 @@ parameters:
     dbal.use_auto_mapper: false
     dbal.default_dto_group: null
     dbal.chunk_size: 1000
+    dbal.oder_direction: 'ASC'
 
 services:
 
@@ -44,6 +45,7 @@ services:
             $defaultDtoGroup: '%dbal.default_dto_group%'
             $chunkSize: '%dbal.chunk_size%'
             $fieldNames: '%dbal.field_names%'
+            $orderDirection: '%dbal.oder_direction%'
 
     ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:

@@ -6,17 +6,21 @@ namespace ITech\Bundle\DbalBundle\Manager;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\ParameterType;
+use Generator;
+use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Config\ConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface;
 use ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface;
+use RuntimeException;
 
 final class DbalManager
 {
     public function __construct(
         private Connection $connection,
         private DtoDeserializerInterface $deserializer,
-        private DtoFieldExtractorInterface $fieldStrategy,
+        private DtoFieldExtractorInterface $dtoFieldExtractor,
         private DbalBundleConfig $config,
     ) {
         if (!$config) {
@@ -29,7 +33,7 @@ final class DbalManager
      */
     public function findById(string|int $id, string $tableName, ?string $dtoClass = null, string $idField = ConfigurationInterface::ID_NAME): object|array|null
     {
-        $fields = $dtoClass ? $this->fieldStrategy->getFields($dtoClass) : ['*'];
+        $fields = $dtoClass ? $this->dtoFieldExtractor->getFields($dtoClass) : ['*'];
 
         $fieldList = implode(', ', $fields);
         $sql = sprintf(
@@ -53,7 +57,7 @@ final class DbalManager
             return [];
         }
 
-        $fields = $dtoClass ? $this->fieldStrategy->getFields($dtoClass) : ['*'];
+        $fields = $dtoClass ? $this->dtoFieldExtractor->getFields($dtoClass) : ['*'];
         $fieldList = implode(', ', $fields);
 
         $placeholders = array_map(static fn ($i) => ":id_$i", array_keys($idList));
@@ -76,6 +80,74 @@ final class DbalManager
         $rows = $stmt->fetchAllAssociative();
 
         return array_map(fn (array $row) => $this->deserializer->denormalize($row, $dtoClass), $rows);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function iterateByCursor(
+        string $tableName,
+        string $cursorField = ConfigurationInterface::ID_NAME,
+        array $initialCursorValues = [0],
+        ?string $dtoClass = null,
+    ): Generator {
+        if (empty($cursorField)) {
+            throw new InvalidArgumentException('Cursor field must be defined.');
+        }
+
+        $fieldList = $dtoClass !== null
+            ? implode(', ', $this->dtoFieldExtractor->getFields($dtoClass))
+            : '*';
+
+        $cursorValues = $initialCursorValues;
+
+        while (true) {
+            $sql = sprintf(
+                'SELECT %s FROM %s WHERE %s > :cursor ORDER BY %s %s LIMIT :limit',
+                $fieldList,
+                $tableName,
+                $cursorField,
+                $cursorField,
+                $this->config->orderDirection,
+            );
+
+            $cursor = $cursorValues[0];
+
+            $params = [
+                'cursor' => $cursor,
+                'limit' => $this->config->chunkSize,
+            ];
+
+            $types = [
+                'cursor' => $this->getParameterType($cursor),
+                'limit' => ParameterType::INTEGER,
+            ];
+
+            $stmt = $this->connection->executeQuery($sql, $params, $types);
+
+            $rows = $stmt->fetchAllAssociative();
+
+            if (empty($rows)) {
+                break;
+            }
+
+            foreach ($rows as $row) {
+                if ($dtoClass !== null) {
+                    $dto = $this->deserializer->denormalize($row, $dtoClass);
+                    $cursorValues = [$this->dtoFieldExtractor->getFieldValue($dto, $cursorField)];
+                    yield $dto;
+                } else {
+                    $cursorValue = $row[$cursorField] ?? null;
+
+                    if ($cursorValue === null) {
+                        throw new RuntimeException("Missing cursor field '{$cursorField}' in raw row data.");
+                    }
+
+                    $cursorValues = [$cursorValue];
+                    yield $row;
+                }
+            }
+        }
     }
 
     /**
@@ -152,5 +224,14 @@ final class DbalManager
     public function getConnection(): Connection
     {
         return $this->connection;
+    }
+
+    private function getParameterType(mixed $value): ParameterType
+    {
+        return match (true) {
+            is_int($value) => ParameterType::INTEGER,
+            is_bool($value) => ParameterType::BOOLEAN,
+            default => ParameterType::STRING,
+        };
     }
 }

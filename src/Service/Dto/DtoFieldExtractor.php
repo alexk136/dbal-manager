@@ -40,4 +40,31 @@ final class DtoFieldExtractor implements DtoFieldExtractorInterface
 
         return array_unique($fields);
     }
+
+    public function getFieldValue(object $dto, string $field): mixed
+    {
+        $getter = 'get' . ucfirst($field);
+
+        if (method_exists($dto, $getter)) {
+            return $dto->$getter();
+        }
+
+        if (property_exists($dto, $field)) {
+            $reflection = new ReflectionProperty($dto, $field);
+
+            if ($reflection->isPublic()) {
+                return $dto->$field;
+            }
+
+            $reflection->setAccessible(true);
+
+            return $reflection->getValue($dto);
+        }
+
+        if (method_exists($dto, '__call')) {
+            return $dto->$getter();
+        }
+
+        return null;
+    }
 }

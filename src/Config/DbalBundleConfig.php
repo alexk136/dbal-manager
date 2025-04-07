@@ -11,6 +11,7 @@ final readonly class DbalBundleConfig implements ConfigurationInterface
         public bool $useAutoMapper = false,
         public ?string $defaultDtoGroup = null,
         public int $chunkSize = 1000,
+        public string $orderDirection = 'ASC',
     ) {
     }
 }
