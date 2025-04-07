@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ITech\Bundle\DbalBundle\Utils;
 
 final readonly class DtoDeserializerFactory

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Service;
+namespace ITech\Bundle\DbalBundle\Service\Transaction;
 
 use Closure;
 use Doctrine\DBAL\TransactionIsolationLevel;

@@ -1,7 +1,10 @@
 parameters:
+    dbal.field_names:
+        id: 'id'
     dbal.transaction_isolation_level: !php/const Doctrine\DBAL\TransactionIsolationLevel::REPEATABLE_READ
     dbal.use_auto_mapper: false
-    dbal.default_dto_group:
+    dbal.default_dto_group: null
+    dbal.chunk_size: 1000
 
 services:
 
@@ -27,22 +30,38 @@ services:
     ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface:
          alias: ITech\Bundle\DbalBundle\Utils\DtoDeserializer
 
+    # FieldSelector
+    ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractor:
+        arguments: []
+
+    ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface:
+        alias: ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractor
+
     # Манагеры
-    ITech\Bundle\DbalBundle\DBAL\DbalManagerFactory:
+    ITech\Bundle\DbalBundle\Config\DbalBundleConfig:
+        arguments:
+            $useAutoMapper: '%dbal.use_auto_mapper%'
+            $defaultDtoGroup: '%dbal.default_dto_group%'
+            $chunkSize: '%dbal.chunk_size%'
+            $fieldNames: '%dbal.field_names%'
+
+    ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:
             $dtoDeserializer: '@ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface'
+            $dtoFieldExtractor: '@ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
 
     ITech\Bundle\DbalBundle\Manager\DbalManager:
-        factory: [ '@ITech\Bundle\DbalBundle\DBAL\DbalManagerFactory', 'createByConnection' ]
+        factory: [ '@ITech\Bundle\DbalBundle\Manager\DbalManagerFactory', 'createByConnection' ]
         arguments:
             - '@Doctrine\DBAL\Connection'
 
-    ITech\Bundle\DbalBundle\Service\TransactionService:
+    ITech\Bundle\DbalBundle\Service\Transaction\TransactionService:
         arguments:
             - '@Doctrine\DBAL\Connection'
             - '%dbal.transaction_isolation_level%'
 
-    ITech\Bundle\DbalBundle\Service\TransactionServiceInterface:
+    ITech\Bundle\DbalBundle\Service\Transaction\TransactionServiceInterface:
         alias: ITech\Bundle\DbalBundle\Service\TransactionService
 
 

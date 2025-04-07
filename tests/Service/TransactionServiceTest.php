@@ -6,7 +6,7 @@ namespace ITech\Bundle\DbalBundle\Tests\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\TransactionIsolationLevel;
-use ITech\Bundle\DbalBundle\Service\TransactionService;
+use ITech\Bundle\DbalBundle\Service\Transaction\TransactionService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

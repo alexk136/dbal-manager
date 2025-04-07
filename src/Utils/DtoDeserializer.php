@@ -7,8 +7,9 @@ namespace ITech\Bundle\DbalBundle\Utils;
 final readonly class DtoDeserializer implements DtoDeserializerInterface
 {
     public function __construct(
-        private DtoDeserializerInterface $innerDeserializer
-    ) {}
+        private DtoDeserializerInterface $innerDeserializer,
+    ) {
+    }
 
     public function denormalize(array $data, string $type): object
     {
