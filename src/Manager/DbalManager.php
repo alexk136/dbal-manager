@@ -127,6 +127,8 @@ final class DbalManager
 
             $rows = $stmt->fetchAllAssociative();
 
+            $stmt->free();
+
             if (empty($rows)) {
                 break;
             }
@@ -147,6 +149,48 @@ final class DbalManager
                     yield $row;
                 }
             }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function iterateByOffset(
+        string $sql,
+        array $params = [],
+        array $types = [],
+        string $indexField = ConfigurationInterface::ID_NAME,
+        ?string $dtoClass = null,
+    ): \Generator {
+        $offset = 0;
+
+        while (true) {
+            $params['limit'] = $this->config->chunkSize;
+            $params['offset'] = $offset;
+
+            $types['limit'] = ParameterType::INTEGER;
+            $types['offset'] = ParameterType::INTEGER;
+
+            $pagedSql = $sql . ' ORDER BY ' . $indexField . ' LIMIT :limit OFFSET :offset';
+            $stmt = $this->connection->executeQuery($pagedSql, $params, $types);
+
+            $rows = $stmt->fetchAllAssociative();
+
+            $stmt->free();
+
+            if (empty($rows)) {
+                break;
+            }
+
+            foreach ($rows as $row) {
+                if ($dtoClass !== null) {
+                    yield $this->deserializer->denormalize($row, $dtoClass);
+                } else {
+                    yield $row;
+                }
+            }
+
+            $offset += $this->config->chunkSize;
         }
     }
 
