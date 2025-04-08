@@ -10,26 +10,26 @@ parameters:
 services:
 
     # Десериалиторы
-    ITech\Bundle\DbalBundle\Utils\SymfonyDtoDeserializer:
+    ITech\Bundle\DbalBundle\Service\Serialize\SymfonyDtoDeserializer:
         arguments:
             $serializer: '@serializer'
             $defaultGroup: '%dbal.default_dto_group%'
 
-    ITech\Bundle\DbalBundle\Utils\AutoMapperDtoDeserializer:
+    ITech\Bundle\DbalBundle\Service\Serialize\AutoMapperDtoDeserializer:
         arguments:
             $autoMapper: '@?AutoMapper\AutoMapperInterface'
 
-    ITech\Bundle\DbalBundle\Utils\DtoDeserializerFactory:
+    ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerFactory:
         arguments:
-            $symfonyDeserializer: '@ITech\Bundle\DbalBundle\Utils\SymfonyDtoDeserializer'
-            $autoMapperDeserializer: '@?ITech\Bundle\DbalBundle\Utils\AutoMapperDtoDeserializer'
+            $symfonyDeserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\SymfonyDtoDeserializer'
+            $autoMapperDeserializer: '@?ITech\Bundle\DbalBundle\Service\Serialize\AutoMapperDtoDeserializer'
             $useAutoMapper: '%dbal.use_auto_mapper%'
 
-    ITech\Bundle\DbalBundle\Utils\DtoDeserializer:
-        factory: [ '@ITech\Bundle\DbalBundle\Utils\DtoDeserializerFactory', 'create' ]
+    ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializer:
+        factory: [ '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerFactory', 'create' ]
 
-    ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface:
-         alias: ITech\Bundle\DbalBundle\Utils\DtoDeserializer
+    ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface:
+         alias: ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializer
 
     # FieldSelector
     ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractor:
@@ -49,7 +49,7 @@ services:
 
     ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:
-            $dtoDeserializer: '@ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface'
+            $dtoDeserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
             $dtoFieldExtractor: '@ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface'
             $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
 

@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Config\ConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface;
-use ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface;
+use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 use RuntimeException;
 
 final class DbalManager
@@ -161,7 +161,7 @@ final class DbalManager
         array $types = [],
         string $indexField = ConfigurationInterface::ID_NAME,
         ?string $dtoClass = null,
-    ): \Generator {
+    ): Generator {
         $offset = 0;
 
         while (true) {

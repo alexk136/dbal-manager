@@ -7,7 +7,7 @@ namespace ITech\Bundle\DbalBundle\Manager;
 use Doctrine\DBAL\Connection;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface;
-use ITech\Bundle\DbalBundle\Utils\DtoDeserializerInterface;
+use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 
 final readonly class DbalManagerFactory
 {

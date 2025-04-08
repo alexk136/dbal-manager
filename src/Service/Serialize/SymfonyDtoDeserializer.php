@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Utils;
+namespace ITech\Bundle\DbalBundle\Service\Serialize;
 
 use ReflectionClass;
 use ReflectionException;
