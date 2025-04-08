@@ -31,13 +31,6 @@ services:
     ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface:
          alias: ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializer
 
-    # FieldSelector
-    ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractor:
-        arguments: []
-
-    ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface:
-        alias: ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractor
-
     # Манагеры
     ITech\Bundle\DbalBundle\Config\DbalBundleConfig:
         arguments:
@@ -47,17 +40,64 @@ services:
             $fieldNames: '%dbal.field_names%'
             $orderDirection: '%dbal.oder_direction%'
 
-    ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
+
+    ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Finder\DbalFinder
+
+    ITech\Bundle\DbalBundle\Manager\Finder\DbalFinder:
         arguments:
-            $dtoDeserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
-            $dtoFieldExtractor: '@ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface'
+            $connection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
+
+    ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Mutator\DbalMutator
+
+    ITech\Bundle\DbalBundle\Manager\Mutator\DbalMutator:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+
+    ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Iterator\CursorIterator
+
+
+    ITech\Bundle\DbalBundle\Manager\Iterator\CursorIterator:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
             $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
 
-    ITech\Bundle\DbalBundle\Manager\DbalManager:
-        factory: [ '@ITech\Bundle\DbalBundle\Manager\DbalManagerFactory', 'createByConnection' ]
-        arguments:
-            - '@Doctrine\DBAL\Connection'
+    ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator
 
+    ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
+
+    ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
+
+
+    ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
+        arguments:
+            $finder: '@ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface'
+            $mutator: '@ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface'
+            $cursorIterator: '@ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface'
+            $offsetIterator: '@ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface'
+            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+
+
+    ITech\Bundle\DbalBundle\Manager\DbalManager:
+        factory: [ '@ITech\Bundle\DbalBundle\Manager\DbalManagerFactory', 'create' ]
+
+
+    # Transactions
     ITech\Bundle\DbalBundle\Service\Transaction\TransactionService:
         arguments:
             - '@Doctrine\DBAL\Connection'

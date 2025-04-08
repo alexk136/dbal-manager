@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Service\Dto;
+namespace ITech\Bundle\DbalBundle\Util;
 
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
-final class DtoFieldExtractor implements DtoFieldExtractorInterface
+final class DtoFieldExtractor
 {
-    public function getFields(string $dtoClass): array
+    public static function getFields(string $dtoClass): array
     {
         $fields = [];
 
@@ -41,7 +41,7 @@ final class DtoFieldExtractor implements DtoFieldExtractorInterface
         return array_unique($fields);
     }
 
-    public function getFieldValue(object $dto, string $field): mixed
+    public static function getFieldValue(object $dto, string $field): mixed
     {
         $getter = 'get' . ucfirst($field);
 

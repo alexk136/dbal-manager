@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Manager;
 
-use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
-use ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractorInterface;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
 
 final readonly class DbalManagerFactory
 {
     public function __construct(
-        private DtoDeserializerInterface $dtoDeserializer,
-        private DtoFieldExtractorInterface $dtoFieldExtractor,
-        private DbalBundleConfig $config,
+        private DbalFinderInterface $finder,
+        private DbalMutatorInterface $mutator,
+        private CursorIteratorInterface $cursorIterator,
+        private OffsetIteratorInterface $offsetIterator,
+        private BulkInserterInterface $bulkInserter,
     ) {
     }
 
-    public function createByConnection(Connection $connection): DbalManager
+    public function create(): DbalManager
     {
         return new DbalManager(
-            $connection,
-            $this->dtoDeserializer,
-            $this->dtoFieldExtractor,
-            $this->config ?? new DbalBundleConfig(),
+            $this->finder,
+            $this->mutator,
+            $this->cursorIterator,
+            $this->offsetIterator,
+            $this->bulkInserter,
         );
     }
 }

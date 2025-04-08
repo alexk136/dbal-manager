@@ -4,44 +4,37 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Tests\Strategy;
 
-use ITech\Bundle\DbalBundle\Service\Dto\DtoFieldExtractor;
+use ITech\Bundle\DbalBundle\Util\DtoFieldExtractor;
 use PHPUnit\Framework\TestCase;
 
-final class FieldStrategyTest extends TestCase
+final class DtoFieldExtractorTest extends TestCase
 {
-    private DtoFieldExtractor $strategy;
-
     public function testGetFieldsFromPublicProperties(): void
     {
-        $fields = $this->strategy->getFields(DtoWithPublicProperties::class);
+        $fields = DtoFieldExtractor::getFields(DtoWithPublicProperties::class);
 
         $this->assertEqualsCanonicalizing(['id', 'email'], $fields);
     }
 
     public function testGetFieldsFromConstructor(): void
     {
-        $fields = $this->strategy->getFields(DtoWithConstructorProperties::class);
+        $fields = DtoFieldExtractor::getFields(DtoWithConstructorProperties::class);
 
         $this->assertEqualsCanonicalizing(['id', 'name'], $fields);
     }
 
     public function testGetFieldsFromGetters(): void
     {
-        $fields = $this->strategy->getFields(DtoWithGetters::class);
+        $fields = DtoFieldExtractor::getFields(DtoWithGetters::class);
 
         $this->assertEqualsCanonicalizing(['id', 'email', 'active'], $fields);
     }
 
     public function testNoDuplicatesWithMixedAccess(): void
     {
-        $fields = $this->strategy->getFields(DtoWithEverything::class);
+        $fields = DtoFieldExtractor::getFields(DtoWithEverything::class);
 
         $this->assertEqualsCanonicalizing(['id', 'email', 'active'], $fields);
-    }
-
-    protected function setUp(): void
-    {
-        $this->strategy = new DtoFieldExtractor();
     }
 }
 
