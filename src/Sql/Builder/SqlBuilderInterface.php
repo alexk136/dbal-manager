@@ -6,7 +6,7 @@ namespace ITech\Bundle\DbalBundle\Sql\Builder;
 
 interface SqlBuilderInterface
 {
-    public function getSelectSql(string $tableName, array $fields, string $id): string;
-    public function getInsertSql(string $tableName, array $params, bool $isIgnore = false): string;
-    public function getUpsertSql(string $tableName, array $params, array $replaceFields): string;
+    public function getInsertBulkSql(string $tableName, array $paramsList, bool $isIgnore = false): string;
+    public function getUpdateBulkSql(string $tableName, array $paramsList, array $whereFields): string;
+    public function prepareBulkParameterLists(array $batchRows, ?array $whereFields = null): array;
 }
