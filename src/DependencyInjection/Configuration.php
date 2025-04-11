@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\DependencyInjection;
 
+use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -16,11 +17,13 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->children()
-            // Переопределение стандартных имён полей (id -> uid)
             ->arrayNode('field_names')
-                ->addDefaultsIfNotSet()
-                    ->children()
-                    ->scalarNode('id')->defaultValue('id')->end()
+            ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode(BundleConfigurationInterface::ID_NAME)->cannotBeEmpty()->defaultValue('id')->end()
+                    ->scalarNode(BundleConfigurationInterface::CREATED_AT_NAME)->cannotBeEmpty()->defaultValue('createdAt')->end()
+                    ->scalarNode(BundleConfigurationInterface::UPDATED_AT_NAME)->cannotBeEmpty()->defaultValue('updatedAt')->end()
+                    ->scalarNode(BundleConfigurationInterface::DELETED_AT_NAME)->cannotBeEmpty()->defaultValue('deletedAt')->end()
                 ->end()
             ->end()
 

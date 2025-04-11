@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Config;
 
-final readonly class DbalBundleConfig implements ConfigurationInterface
+final readonly class DbalBundleConfig implements BundleConfigurationInterface
 {
     public function __construct(
         public array $fieldNames = [],
