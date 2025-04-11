@@ -81,6 +81,28 @@ readonly class MysqlSqlBuilder implements SqlBuilderInterface
         return sprintf('UPDATE `%s` SET %s WHERE %s', $tableName, implode(', ', $setClauses), $whereClause);
     }
 
+    public function getUpsertBulkSql(string $tableName, array $paramsList, array $replaceFields): string
+    {
+        $insertSql = $this->getInsertBulkSql($tableName, $paramsList);
+
+        $replacements = array_map(static function ($field) {
+            if (!\is_array($field)) {
+                return sprintf('%1$s = VALUES(%1$s)', $field);
+            }
+
+            [$column, $type, $condition] = $field + [null, null, null];
+
+            return match ($type) {
+                UpsertReplaceType::Increment => sprintf('%1$s = %1$s + VALUES(%1$s)', $column),
+                UpsertReplaceType::Decrement => sprintf('%1$s = %1$s - VALUES(%1$s)', $column),
+                UpsertReplaceType::Condition => sprintf('%1$s = %2$s', $column, $condition),
+                default => throw new InvalidArgumentException("Unknown UPSERT type: $type"),
+            };
+        }, $replaceFields);
+
+        return sprintf('%s ON DUPLICATE KEY UPDATE %s', $insertSql, implode(', ', $replacements));
+    }
+
     private function getValues(array $row): array
     {
         return array_map(fn ($value) => $this->placeholder->formatValue($value), $row);

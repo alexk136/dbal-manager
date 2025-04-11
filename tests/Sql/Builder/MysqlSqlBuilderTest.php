@@ -6,16 +6,17 @@ namespace ITech\Bundle\DbalBundle\Tests\Sql\Builder;
 
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Sql\Builder\MysqlSqlBuilder;
+use ITech\Bundle\DbalBundle\Sql\Builder\UpsertReplaceType;
 use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use PHPUnit\Framework\TestCase;
 
 final class MysqlSqlBuilderTest extends TestCase
 {
+    private MysqlSqlBuilder $builder;
+
     public function testGetInsertBulkSqlWithQuestionMarks(): void
     {
-        $builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());
-
-        $sql = $builder->getInsertBulkSql('users', [
+        $sql = $this->builder->getInsertBulkSql('users', [
             ['id' => 1, 'name' => 'Alex'],
             ['id' => 2, 'name' => 'Bob'],
         ]);
@@ -29,14 +30,11 @@ final class MysqlSqlBuilderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('paramsList must not be empty');
 
-        $builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());
-        $builder->getInsertBulkSql('users', []);
+        $this->builder->getInsertBulkSql('users', []);
     }
 
     public function testGetUpdateBulkSqlWithQuestionMarks(): void
     {
-        $builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());
-
         $paramsList = [
             ['id' => 1, 'name' => 'Alice'],
             ['id' => 2, 'name' => 'Bob'],
@@ -52,26 +50,70 @@ final class MysqlSqlBuilderTest extends TestCase
             'WHERE (id = ?) OR (id = ?)',
         ]);
 
-        $sql = $builder->getUpdateBulkSql('users', $paramsList, $whereFields);
+        $sql = $this->builder->getUpdateBulkSql('users', $paramsList, $whereFields);
         $this->assertEquals($expected, $sql);
     }
 
-    public function testGetUpdateBulkSqlWithMultipleWhereFields(): void
+    public function testGetUpsertBulkSqlWithSimpleReplace(): void
     {
-        $builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());
+        $sql = $this->builder->getUpsertBulkSql('table_name', [
+            ['a' => 1, 'b' => 2],
+        ], ['a', 'b']);
 
-        $paramsList = [
-            ['id' => 1, 'region_id' => 100, 'name' => 'Alice'],
-            ['id' => 2, 'region_id' => 200, 'name' => 'Bob'],
-        ];
+        $expected = 'INSERT INTO `table_name` (a, b) VALUES (?, ?) ON DUPLICATE KEY UPDATE a = VALUES(a), b = VALUES(b)';
+        $this->assertSame($expected, $sql);
+    }
 
-        $whereFields = ['id', 'region_id'];
+    public function testGetUpsertBulkSqlWithIncrement(): void
+    {
+        $sql = $this->builder->getUpsertBulkSql('table_name', [
+            ['a' => 1, 'count' => 10],
+        ], [
+            ['count', UpsertReplaceType::Increment],
+        ]);
 
-        $sql = $builder->getUpdateBulkSql('users', $paramsList, $whereFields);
+        $expected = 'INSERT INTO `table_name` (a, count) VALUES (?, ?) ON DUPLICATE KEY UPDATE count = count + VALUES(count)';
+        $this->assertSame($expected, $sql);
+    }
 
-        $this->assertStringContainsString('UPDATE `users` SET name = CASE', $sql);
-        $this->assertStringContainsString('WHEN (id = ? AND region_id = ?) THEN ?', $sql);
-        $this->assertStringContainsString('ELSE name END', $sql);
-        $this->assertStringContainsString('WHERE (id = ? AND region_id = ?) OR (id = ? AND region_id = ?)', $sql);
+    public function testGetUpsertBulkSqlWithDecrement(): void
+    {
+        $sql = $this->builder->getUpsertBulkSql('table_name', [
+            ['a' => 1, 'count' => 10],
+        ], [
+            ['count', UpsertReplaceType::Decrement],
+        ]);
+
+        $expected = 'INSERT INTO `table_name` (a, count) VALUES (?, ?) ON DUPLICATE KEY UPDATE count = count - VALUES(count)';
+        $this->assertSame($expected, $sql);
+    }
+
+    public function testGetUpsertBulkSqlWithCondition(): void
+    {
+        $sql = $this->builder->getUpsertBulkSql('table_name', [
+            ['a' => 1, 'status' => 'active'],
+        ], [
+            ['status', UpsertReplaceType::Condition, 'IF(status != "archived", VALUES(status), status)'],
+        ]);
+
+        $expected = 'INSERT INTO `table_name` (a, status) VALUES (?, ?) ON DUPLICATE KEY UPDATE status = IF(status != "archived", VALUES(status), status)';
+        $this->assertSame($expected, $sql);
+    }
+
+    public function testGetUpsertBulkSqlWithUnknownType(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown UPSERT type: unknown');
+
+        $this->builder->getUpsertBulkSql('table_name', [
+            ['a' => 1, 'b' => 2],
+        ], [
+            ['b', 'unknown'],
+        ]);
+    }
+
+    protected function setUp(): void
+    {
+        $this->builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());
     }
 }
