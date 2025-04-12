@@ -4,22 +4,35 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Manager\Bulk;
 
-use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
+use Exception;
+use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
 
-final readonly class BulkInserter implements BulkInserterInterface
+final class BulkInserter extends AbstractDbalWriteExecutor implements BulkInserterInterface
 {
-    public function __construct(
-        private Connection $connection,
-        private DbalBundleConfig $config,
-    ) {
-    }
-
+    /**
+     * @throws Exception
+     */
     public function insert(string $tableName, array $paramsList, bool $isIgnore = false): int
     {
         if (!$paramsList) {
             return 0;
         }
+
+        $firstKeys = array_keys($paramsList[0]);
+
+        foreach ($paramsList as $i => $row) {
+            if (array_keys($row) !== $firstKeys) {
+                throw new InvalidArgumentException("Row #$i has mismatched fields in insert data.");
+            }
+        }
+
+        $normalizedList = $this->normalizeInsertData($paramsList);
+
+        $sql = $this->sqlBuilder->getInsertBulkSql($tableName, $normalizedList, $isIgnore);
+
+        [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
+
+        return $this->executeSql($sql, $flatParams, $types);
     }
 }

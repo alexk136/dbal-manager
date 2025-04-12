@@ -9,7 +9,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Generator;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Config\ConfigurationInterface;
+use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
@@ -31,7 +31,7 @@ final readonly class CursorIterator implements CursorIteratorInterface
      */
     public function iterate(
         string $tableName,
-        string $cursorField = ConfigurationInterface::ID_NAME,
+        string $cursorField = BundleConfigurationInterface::ID_NAME,
         array $initialCursorValues = [0],
         ?string $dtoClass = null,
     ): Generator {

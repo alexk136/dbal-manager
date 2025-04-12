@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Generator;
-use ITech\Bundle\DbalBundle\Config\ConfigurationInterface;
+use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
@@ -29,7 +29,7 @@ final readonly class OffsetIterator implements OffsetIteratorInterface
         string $sql,
         array $params = [],
         array $types = [],
-        string $indexField = ConfigurationInterface::ID_NAME,
+        string $indexField = BundleConfigurationInterface::ID_NAME,
         ?string $dtoClass = null,
     ): Generator {
         $offset = 0;

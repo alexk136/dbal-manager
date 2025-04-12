@@ -6,7 +6,7 @@ namespace ITech\Bundle\DbalBundle\Manager\Finder;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use ITech\Bundle\DbalBundle\Config\ConfigurationInterface;
+use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 use ITech\Bundle\DbalBundle\Util\DtoFieldExtractor;
@@ -22,7 +22,7 @@ final readonly class DbalFinder implements DbalFinderInterface
     /**
      * @throws Exception
      */
-    public function findById(string|int $id, string $tableName, ?string $dtoClass = null, string $idField = ConfigurationInterface::ID_NAME): object|array|null
+    public function findById(string|int $id, string $tableName, ?string $dtoClass = null, string $idField = BundleConfigurationInterface::ID_NAME): object|array|null
     {
         $fields = $dtoClass ? DtoFieldExtractor::getFields($dtoClass) : ['*'];
 
@@ -42,7 +42,7 @@ final readonly class DbalFinder implements DbalFinderInterface
     /**
      * @throws Exception
      */
-    public function findByIdList(array $idList, string $tableName, ?string $dtoClass = null, string $idField = ConfigurationInterface::ID_NAME): array
+    public function findByIdList(array $idList, string $tableName, ?string $dtoClass = null, string $idField = BundleConfigurationInterface::ID_NAME): array
     {
         if (empty($idList)) {
             return [];
