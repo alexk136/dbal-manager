@@ -4,28 +4,18 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Manager\Iterator;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Generator;
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 use ITech\Bundle\DbalBundle\Util\DbalTypeGuesser;
 use ITech\Bundle\DbalBundle\Util\DtoFieldExtractor;
 use RuntimeException;
 
-final readonly class CursorIterator implements CursorIteratorInterface
+final class CursorIterator extends AbstractConfigurableIterator implements CursorIteratorInterface
 {
-    public function __construct(
-        private Connection $connection,
-        private DtoDeserializerInterface $deserializer,
-        private DbalBundleConfig $config,
-    ) {
-    }
-
     /**
      * @throws Exception
      */
@@ -52,14 +42,14 @@ final readonly class CursorIterator implements CursorIteratorInterface
                 $tableName,
                 $cursorField,
                 $cursorField,
-                $this->config->orderDirection,
+                $this->orderDirection,
             );
 
             $cursor = $cursorValues[0];
 
             $params = [
                 'cursor' => $cursor,
-                'limit' => $this->config->chunkSize,
+                'limit' => $this->chunkSize,
             ];
 
             $types = [

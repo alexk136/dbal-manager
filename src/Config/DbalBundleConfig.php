@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Config;
 
+use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
+
 final readonly class DbalBundleConfig implements BundleConfigurationInterface
 {
     public function __construct(
@@ -12,6 +14,7 @@ final readonly class DbalBundleConfig implements BundleConfigurationInterface
         public ?string $defaultDtoGroup = null,
         public int $chunkSize = 1000,
         public string $orderDirection = 'ASC',
+        public string $placeholderStrategy = QuestionMarkPlaceholderStrategy::class,
     ) {
     }
 }

@@ -20,7 +20,7 @@ final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdater
         }
 
         if ($whereFields === null) {
-            $whereFields = [$this->config->fieldNames[BundleConfigurationInterface::ID_NAME]];
+            $whereFields = [$this->fieldNames[BundleConfigurationInterface::ID_NAME]];
         }
 
         $normalizedList = $this->normalizeUpdateParamsList($paramsList);

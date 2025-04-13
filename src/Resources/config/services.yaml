@@ -97,13 +97,8 @@ services:
 
     ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:
-            $finder: '@ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface'
-            $mutator: '@ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface'
-            $cursorIterator: '@ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface'
-            $offsetIterator: '@ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface'
-            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
-            $bulkUpdater: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface'
-            $bulkUpserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface'
+            $connection: '@doctrine.dbal.connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
 
 
     ITech\Bundle\DbalBundle\Manager\DbalManager:

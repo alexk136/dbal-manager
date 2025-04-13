@@ -4,24 +4,14 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Manager\Iterator;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Generator;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 
-final readonly class OffsetIterator implements OffsetIteratorInterface
+final class OffsetIterator extends AbstractConfigurableIterator implements OffsetIteratorInterface
 {
-    public function __construct(
-        private Connection $connection,
-        private DtoDeserializerInterface $deserializer,
-        private DbalBundleConfig $config,
-    ) {
-    }
-
     /**
      * @throws Exception
      */
@@ -35,7 +25,7 @@ final readonly class OffsetIterator implements OffsetIteratorInterface
         $offset = 0;
 
         while (true) {
-            $params['limit'] = $this->config->chunkSize;
+            $params['limit'] = $this->chunkSize;
             $params['offset'] = $offset;
 
             $types['limit'] = ParameterType::INTEGER;
@@ -60,7 +50,7 @@ final readonly class OffsetIterator implements OffsetIteratorInterface
                 }
             }
 
-            $offset += $this->config->chunkSize;
+            $offset += $this->chunkSize;
         }
     }
 }

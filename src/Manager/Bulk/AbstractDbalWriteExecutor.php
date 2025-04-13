@@ -19,11 +19,14 @@ use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
 
 abstract class AbstractDbalWriteExecutor
 {
+    protected array $fieldNames;
+
     public function __construct(
         protected Connection $connection,
-        protected DbalBundleConfig $config,
         protected SqlBuilderInterface $sqlBuilder,
+        protected DbalBundleConfig $config,
     ) {
+        $this->resetConfig();
     }
 
     /**
@@ -120,5 +123,21 @@ abstract class AbstractDbalWriteExecutor
         $row = $this->ensureCreatedAt($row, $timestamp);
 
         return $this->setUpdatedAt($row, $timestamp);
+    }
+
+    /**
+     * Важно! Переопределение списка полей следует использовать с осторожностью.
+     */
+    public function setFieldNames(array $fieldNames): static
+    {
+        $this->fieldNames = $fieldNames;
+
+        return $this;
+    }
+
+    public function resetConfig(): static
+    {
+        $this->fieldNames = $this->config->fieldNames;
+        return $this;
     }
 }

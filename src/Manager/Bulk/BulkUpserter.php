@@ -32,7 +32,7 @@ final class BulkUpserter extends AbstractDbalWriteExecutor implements BulkUpsert
 
     private function updateReplaceFields(array $replaceFields): array
     {
-        $updatedAtField = $this->config->fieldNames[BundleConfigurationInterface::UPDATED_AT_NAME];
+        $updatedAtField = $this->fieldNames[BundleConfigurationInterface::UPDATED_AT_NAME] ?? [];
 
         if (!in_array($updatedAtField, $replaceFields)) {
             $replaceFields[] = $updatedAtField;
