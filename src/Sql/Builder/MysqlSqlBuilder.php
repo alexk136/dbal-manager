@@ -103,6 +103,18 @@ readonly class MysqlSqlBuilder implements SqlBuilderInterface
         return sprintf('%s ON DUPLICATE KEY UPDATE %s', $insertSql, implode(', ', $replacements));
     }
 
+    public function getDeleteBulkSql(string $tableName, array $idList): string
+    {
+        $placeholderList = implode(', ', array_fill(0, count($idList), '?'));
+
+        return sprintf(
+            'DELETE FROM `%s` WHERE `id` IN (%s)',
+            $tableName,
+            $placeholderList
+        );
+    }
+
+
     private function getValues(array $row): array
     {
         return array_map(fn ($value) => $this->placeholder->formatValue($value), $row);

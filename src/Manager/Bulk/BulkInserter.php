@@ -13,7 +13,7 @@ final class BulkInserter extends AbstractDbalWriteExecutor implements BulkInsert
     /**
      * @throws Exception
      */
-    public function insert(string $tableName, array $paramsList, bool $isIgnore = false): int
+    public function insertMany(string $tableName, array $paramsList, bool $isIgnore = false): int
     {
         if (!$paramsList) {
             return 0;
@@ -34,5 +34,13 @@ final class BulkInserter extends AbstractDbalWriteExecutor implements BulkInsert
         [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
 
         return $this->executeSql($sql, $flatParams, $types);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function insertOne(string $tableName, array $params, bool $isIgnore = false): int
+    {
+        return $this->insertMany($tableName, [$params], $isIgnore);
     }
 }

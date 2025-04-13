@@ -20,7 +20,7 @@ final class BulkUpserterTest extends TestCase
 
     public function testUpsertBulkReturnsZeroOnEmptyInput(): void
     {
-        $result = $this->executor->upsert('test_table', [], []);
+        $result = $this->executor->upsertMany('test_table', [], []);
         $this->assertSame(0, $result);
     }
 
@@ -40,7 +40,7 @@ final class BulkUpserterTest extends TestCase
             ->with($expectedSql, $this->countOf(8), $this->countOf(8))
             ->willReturn(42);
 
-        $result = $this->executor->upsert('users', $paramsList, $replaceFields);
+        $result = $this->executor->upsertMany('users', $paramsList, $replaceFields);
 
         $this->assertSame(42, $result);
     }
@@ -63,7 +63,7 @@ final class BulkUpserterTest extends TestCase
             ->with($expectedSql, $this->countOf(8), $this->countOf(8))
             ->willReturn(42);
 
-        $result = $this->executor->upsert('counter', $paramsList, $replaceFields);
+        $result = $this->executor->upsertMany('counter', $paramsList, $replaceFields);
         $this->assertSame(42, $result);
     }
 
@@ -84,7 +84,7 @@ final class BulkUpserterTest extends TestCase
             ->with($expectedSql, $this->countOf(4), $this->countOf(4))
             ->willReturn(42);
 
-        $result = $this->executor->upsert('user_status', $paramsList, $replaceFields);
+        $result = $this->executor->upsertMany('user_status', $paramsList, $replaceFields);
         $this->assertSame(42, $result);
     }
 
@@ -100,6 +100,6 @@ final class BulkUpserterTest extends TestCase
                 BundleConfigurationInterface::UPDATED_AT_NAME => 'updated_at',
             ],
         );
-        $this->executor = new BulkUpserter($this->connection, $config, $sqlBuilder);
+        $this->executor = new BulkUpserter($this->connection, $sqlBuilder, $config);
     }
 }

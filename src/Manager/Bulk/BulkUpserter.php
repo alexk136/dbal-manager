@@ -13,7 +13,7 @@ final class BulkUpserter extends AbstractDbalWriteExecutor implements BulkUpsert
     /**
      * @throws Exception
      */
-    public function upsert(string $tableName, array $paramsList, array $replaceFields): int
+    public function upsertMany(string $tableName, array $paramsList, array $replaceFields): int
     {
         if (empty($paramsList)) {
             return 0;
@@ -28,6 +28,14 @@ final class BulkUpserter extends AbstractDbalWriteExecutor implements BulkUpsert
         [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
 
         return $this->executeSql($sql, $flatParams, $types);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function upsertOne(string $tableName, array $params, array $replaceFields): int
+    {
+        return $this->upsertMany($tableName, [$params], $replaceFields);
     }
 
     private function updateReplaceFields(array $replaceFields): array

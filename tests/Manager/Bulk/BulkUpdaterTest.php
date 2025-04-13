@@ -19,7 +19,7 @@ final class BulkUpdaterTest extends TestCase
 
     public function testUpdateReturnsZeroOnEmptyInput(): void
     {
-        $result = $this->updater->update('users', []);
+        $result = $this->updater->updateMany('users', []);
         $this->assertSame(0, $result);
     }
 
@@ -39,7 +39,7 @@ final class BulkUpdaterTest extends TestCase
             ->with($sql, $flatParams, $types)
             ->willReturn(1);
 
-        $result = $this->updater->update('users', $paramsList);
+        $result = $this->updater->updateMany('users', $paramsList);
 
         $this->assertEquals(1, $result);
     }
@@ -57,6 +57,6 @@ final class BulkUpdaterTest extends TestCase
             ],
         );
 
-        $this->updater = new BulkUpdater($this->connection, $config, $this->sqlBuilder);
+        $this->updater = new BulkUpdater($this->connection, $this->sqlBuilder, $config);
     }
 }

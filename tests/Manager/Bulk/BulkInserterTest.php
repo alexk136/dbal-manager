@@ -27,7 +27,7 @@ final class BulkInserterTest extends TestCase
 
     public function testInsertReturnsZeroOnEmptyInput(): void
     {
-        $result = $this->inserter->insert('users', []);
+        $result = $this->inserter->insertMany('users', []);
         $this->assertSame(0, $result);
     }
 
@@ -36,7 +36,7 @@ final class BulkInserterTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Row #1 has mismatched fields');
 
-        $this->inserter->insert('users', [
+        $this->inserter->insertMany('users', [
             ['name' => ['Alice']],
             ['email' => ['alice@example.com']],
         ]);
@@ -58,7 +58,7 @@ final class BulkInserterTest extends TestCase
             ->with($sql, $flatParams, $types)
             ->willReturn(1);
 
-        $result = $this->inserter->insert('users', $paramsList);
+        $result = $this->inserter->insertMany('users', $paramsList);
         $this->assertEquals(1, $result);
     }
 
@@ -78,7 +78,7 @@ final class BulkInserterTest extends TestCase
             ->method('executeStatement')
             ->willThrowException($exception);
 
-        $this->inserter->insert('users', [['name' => ['Test']]]);
+        $this->inserter->insertMany('users', [['name' => ['Test']]]);
     }
 
     public function testInsertHandlesCheckConstraintViolation(): void
@@ -97,26 +97,24 @@ final class BulkInserterTest extends TestCase
             ->method('executeStatement')
             ->willThrowException($dbalDriverException);
 
-        $this->inserter->insert('users', [['name' => ['Test']]]);
+        $this->inserter->insertMany('users', [['name' => ['Test']]]);
     }
 
     public function testInsertHandlesGenericDbalException(): void
     {
         $this->expectException(WriteDbalException::class);
 
-        $genericDbalException = new DbalDriverException(
-            new Exception('Some DBAL error'),
-            null,
-        );
-
         $this->builder->method('getInsertBulkSql')->willReturn('INSERT ...');
         $this->builder->method('prepareBulkParameterLists')->willReturn([[], []]);
 
         $this->connection
             ->method('executeStatement')
-            ->willThrowException($genericDbalException);
+            ->willThrowException(new DbalDriverException(
+                new Exception('Some DBAL error'),
+                null,
+            ));
 
-        $this->inserter->insert('users', [['name' => ['Test']]]);
+        $this->inserter->insertMany('users', [['name' => ['Test']]]);
     }
 
     protected function setUp(): void
@@ -136,6 +134,6 @@ final class BulkInserterTest extends TestCase
             orderDirection: 'ASC',
         );
 
-        $this->inserter = new BulkInserter($this->connection, $config, $this->builder);
+        $this->inserter = new BulkInserter($this->connection, $this->builder, $config);
     }
 }

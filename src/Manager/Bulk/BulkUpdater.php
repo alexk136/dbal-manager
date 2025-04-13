@@ -13,7 +13,7 @@ final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdater
     /**
      * @throws Exception
      */
-    public function update(string $tableName, array $paramsList, ?array $whereFields = null): int
+    public function updateMany(string $tableName, array $paramsList, ?array $whereFields = null): int
     {
         if (empty($paramsList)) {
             return 0;
@@ -30,5 +30,13 @@ final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdater
         [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList, $whereFields);
 
         return $this->executeSql($sql, $flatParams, $types);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function updateOne(string $tableName, array $params, ?array $whereFields = null): int
+    {
+        return $this->updateMany($tableName, [$params], $whereFields);
     }
 }

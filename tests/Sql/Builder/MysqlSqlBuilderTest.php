@@ -112,7 +112,31 @@ final class MysqlSqlBuilderTest extends TestCase
         ]);
     }
 
-    protected function setUp(): void
+    public function testGetDeleteBulkSqlWithSingleId(): void
+    {
+        $sql = $this->builder->getDeleteBulkSql('users', [1]);
+
+        $expected = 'DELETE FROM `users` WHERE `id` IN (?)';
+        $this->assertEquals($expected, $sql);
+    }
+
+    public function testGetDeleteBulkSqlWithMultipleIds(): void
+    {
+        $sql = $this->builder->getDeleteBulkSql('users', [1, 2, 3]);
+
+        $expected = 'DELETE FROM `users` WHERE `id` IN (?, ?, ?)';
+        $this->assertEquals($expected, $sql);
+    }
+
+    public function testGetDeleteBulkSqlWithEmptyIdList(): void
+    {
+        $sql = $this->builder->getDeleteBulkSql('users', []);
+
+        $expected = 'DELETE FROM `users` WHERE `id` IN ()';
+        $this->assertEquals($expected, $sql);
+    }
+
+    public function setUp(): void
     {
         $this->builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());
     }

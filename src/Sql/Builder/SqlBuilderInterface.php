@@ -25,4 +25,9 @@ interface SqlBuilderInterface
      * Генерирует SQL для массовой вставки с обновлением при конфликте (UPSERT).
      */
     public function getUpsertBulkSql(string $tableName, array $paramsList, array $replaceFields): string;
+
+    /**
+     * Генерирует SQL для массового удаления.
+     */
+    public function getDeleteBulkSql(string $tableName, array $idList): string;
 }
