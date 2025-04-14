@@ -3,7 +3,7 @@
   "description": "Dbal bundle",
   "type": "symfony-bundle",
   "license": "proprietary",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Alex",
