@@ -97,12 +97,12 @@ services:
 
     ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:
-            $connection: '@doctrine.dbal.connection'
+            $defaultConnection: '@doctrine.dbal.connection'
             $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
 
 
     ITech\Bundle\DbalBundle\Manager\DbalManager:
-        factory: [ '@ITech\Bundle\DbalBundle\Manager\DbalManagerFactory', 'create' ]
+        factory: [ '@ITech\Bundle\DbalBundle\Manager\DbalManagerFactory', 'createManager' ]
 
 
     # Transactions
