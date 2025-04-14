@@ -54,7 +54,7 @@ final readonly class DbalManagerFactory
             $offsetIterator,
             $bulkInserter,
             $bulkUpdater,
-            $bulkUpserter
+            $bulkUpserter,
         );
     }
 }

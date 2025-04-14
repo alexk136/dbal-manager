@@ -30,6 +30,23 @@ abstract class AbstractDbalWriteExecutor
     }
 
     /**
+     * Важно! Переопределение списка полей следует использовать с осторожностью.
+     */
+    public function setFieldNames(array $fieldNames): static
+    {
+        $this->fieldNames = $fieldNames;
+
+        return $this;
+    }
+
+    public function resetConfig(): static
+    {
+        $this->fieldNames = $this->config->fieldNames;
+
+        return $this;
+    }
+
+    /**
      * @throws Exception
      */
     protected function executeSql(string $sql, array $params, array $types): int
@@ -123,21 +140,5 @@ abstract class AbstractDbalWriteExecutor
         $row = $this->ensureCreatedAt($row, $timestamp);
 
         return $this->setUpdatedAt($row, $timestamp);
-    }
-
-    /**
-     * Важно! Переопределение списка полей следует использовать с осторожностью.
-     */
-    public function setFieldNames(array $fieldNames): static
-    {
-        $this->fieldNames = $fieldNames;
-
-        return $this;
-    }
-
-    public function resetConfig(): static
-    {
-        $this->fieldNames = $this->config->fieldNames;
-        return $this;
     }
 }

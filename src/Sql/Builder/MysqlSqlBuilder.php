@@ -110,10 +110,9 @@ readonly class MysqlSqlBuilder implements SqlBuilderInterface
         return sprintf(
             'DELETE FROM `%s` WHERE `id` IN (%s)',
             $tableName,
-            $placeholderList
+            $placeholderList,
         );
     }
-
 
     private function getValues(array $row): array
     {
