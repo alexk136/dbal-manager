@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Tests\Strategy;
 
-use ITech\Bundle\DbalBundle\Util\DtoFieldExtractor;
+use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 use PHPUnit\Framework\TestCase;
 
 final class DtoFieldExtractorTest extends TestCase

@@ -9,7 +9,7 @@ use Doctrine\DBAL\Exception;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
-use ITech\Bundle\DbalBundle\Util\DtoFieldExtractor;
+use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 
 final readonly class DbalFinder implements DbalFinderInterface
 {
@@ -77,7 +77,7 @@ final readonly class DbalFinder implements DbalFinderInterface
      * Выполнить SELECT и получить массив DTO.
      * @throws Exception
      */
-    public function fetchAll(string $sql, array $params = [], ?string $dtoClass = null): iterable
+    public function fetchAllBySql(string $sql, array $params = [], ?string $dtoClass = null): iterable
     {
         $stmt = $this->connection->executeQuery($sql, $params);
 
@@ -92,8 +92,10 @@ final readonly class DbalFinder implements DbalFinderInterface
      * Выполнить SELECT и получить одну запись.
      * @throws Exception
      */
-    public function fetchOne(string $sql, array $params = [], ?string $dtoClass = null): object|array|null
+    public function fetchOneBySql(string $sql, array $params = [], ?string $dtoClass = null): object|array|null
     {
+        $normalizedSql = $this->normalizeSqlLimit($sql);
+
         $row = $this->connection->fetchAssociative($sql, $params);
 
         if ($row === false) {
@@ -103,5 +105,12 @@ final readonly class DbalFinder implements DbalFinderInterface
         return $dtoClass
             ? $this->deserializer->denormalize($row, $dtoClass)
             : $row;
+    }
+
+    private function normalizeSqlLimit(string $sql): string
+    {
+        $sql = preg_replace('/\s+LIMIT\s+\d+(\s+OFFSET\s+\d+)?\s*$/i', '', $sql);
+
+        return rtrim($sql, '; ') . ' LIMIT 1';
     }
 }

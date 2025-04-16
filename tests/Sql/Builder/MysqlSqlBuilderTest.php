@@ -17,8 +17,8 @@ final class MysqlSqlBuilderTest extends TestCase
     public function testGetInsertBulkSqlWithQuestionMarks(): void
     {
         $sql = $this->builder->getInsertBulkSql('users', [
-            ['id' => 1, 'name' => 'Alex'],
-            ['id' => 2, 'name' => 'Bob'],
+            ['id' => 1, 'name' => ['Alex', 'Kabanov']],
+            ['id' => 2, 'name' => ['Bob', 'Marley']],
         ]);
 
         $expected = 'INSERT INTO `users` (id, name) VALUES (?, ?), (?, ?)';
@@ -52,6 +52,19 @@ final class MysqlSqlBuilderTest extends TestCase
 
         $sql = $this->builder->getUpdateBulkSql('users', $paramsList, $whereFields);
         $this->assertEquals($expected, $sql);
+    }
+
+    public function testGetUpdateBulkSqlWithQuestionMarksNoWhere(): void
+    {
+        $paramsList = [
+            ['id' => 1, 'name' => 'Alice'],
+        ];
+
+        $whereFields = [];
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $sql = $this->builder->getUpdateBulkSql('users', $paramsList, $whereFields);
     }
 
     public function testGetUpsertBulkSqlWithSimpleReplace(): void

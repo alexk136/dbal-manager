@@ -44,6 +44,10 @@ readonly class MysqlSqlBuilder implements SqlBuilderInterface
 
     public function getUpdateBulkSql(string $tableName, array $paramsList, array $whereFields): string
     {
+        if (empty($whereFields)) {
+            throw new InvalidArgumentException('Bulk update requires at least one where-field to generate CASE conditions.');
+        }
+
         $whereFieldMap = array_flip($whereFields);
         $whenExpressions = [];
         $whereConditions = [];
@@ -58,6 +62,7 @@ readonly class MysqlSqlBuilder implements SqlBuilderInterface
 
             $whereExpr = '(' . implode(' AND ', $whereParts) . ')';
             $whereKey = implode('-', array_map(static fn ($field) => $params[$field], $whereFields));
+
             $whereConditions[$whereKey] = $whereExpr;
 
             foreach ($params as $field => $value) {

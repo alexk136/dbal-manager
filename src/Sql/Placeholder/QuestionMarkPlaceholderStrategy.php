@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Sql\Placeholder;
 
+use BackedEnum;
 use InvalidArgumentException;
+use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 
 final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterface
 {
@@ -71,9 +73,23 @@ final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterf
 
     private function extractSingleValueAndType(mixed $value): array
     {
-        return is_array($value)
-            ? [$value[0], $value[1] ?? null]
-            : [$value, null];
+        if ($value instanceof BackedEnum) {
+            $value = $value->value;
+        }
+
+        if (is_array($value)) {
+            $actualValue = $value[0] instanceof BackedEnum ? $value[0]->value : $value[0];
+
+            $type = isset($value[1])
+                ? (is_int($value[1])
+                    ? DbalTypeGuesser::mapLegacyType($value[1])
+                    : $value[1])
+                : DbalTypeGuesser::guessParameterType($actualValue);
+
+            return [$actualValue, $type];
+        }
+
+        return [$value, DbalTypeGuesser::guessParameterType($value)];
     }
 
     private function extractValuesAndTypes(array $map): array

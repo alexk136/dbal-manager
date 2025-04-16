@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\Tests\Sql\Placeholder;
 
+use Doctrine\DBAL\ParameterType;
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use PDO;
@@ -16,14 +17,14 @@ final class QuestionMarkPlaceholderStrategyTest extends TestCase
         $strategy = new QuestionMarkPlaceholderStrategy();
 
         $rows = [
-            ['id' => 1, 'name' => ['Alex', PDO::PARAM_STR]],
-            ['id' => 2, 'name' => ['Bob', PDO::PARAM_STR]],
+            ['id' => 1, 'name' => ['Alex', ParameterType::STRING]],
+            ['id' => 2, 'name' => ['Bob', ParameterType::STRING]],
         ];
 
         [$params, $types] = $strategy->prepareBulkParameterLists($rows);
 
         $this->assertEquals([1, 'Alex', 2, 'Bob'], $params);
-        $this->assertEquals([null, PDO::PARAM_STR, null, PDO::PARAM_STR], $types);
+        $this->assertEquals([ParameterType::INTEGER, ParameterType::STRING, ParameterType::INTEGER, ParameterType::STRING], $types);
     }
 
     public function testPrepareBulkParameterListsWithWhere(): void
@@ -31,8 +32,8 @@ final class QuestionMarkPlaceholderStrategyTest extends TestCase
         $strategy = new QuestionMarkPlaceholderStrategy();
 
         $rows = [
-            ['id' => [10, PDO::PARAM_INT], 'value' => [100, PDO::PARAM_INT]],
-            ['id' => [20, PDO::PARAM_INT], 'value' => [200, PDO::PARAM_INT]],
+            ['id' => [10, ParameterType::INTEGER], 'value' => [100, ParameterType::INTEGER]],
+            ['id' => [20, ParameterType::INTEGER], 'value' => [200, ParameterType::INTEGER]],
         ];
 
         [$params, $types] = $strategy->prepareBulkParameterLists($rows, ['id']);
@@ -44,9 +45,9 @@ final class QuestionMarkPlaceholderStrategyTest extends TestCase
         ];
 
         $expectedTypes = [
-            PDO::PARAM_INT, PDO::PARAM_INT,
-            PDO::PARAM_INT, PDO::PARAM_INT,
-            PDO::PARAM_INT, PDO::PARAM_INT,
+            ParameterType::INTEGER, ParameterType::INTEGER,
+            ParameterType::INTEGER, ParameterType::INTEGER,
+            ParameterType::INTEGER, ParameterType::INTEGER,
         ];
 
         $this->assertEquals($expectedParams, $params);
@@ -66,8 +67,8 @@ final class QuestionMarkPlaceholderStrategyTest extends TestCase
         $strategy = new QuestionMarkPlaceholderStrategy();
 
         $rows = [
-            ['id' => [1, PDO::PARAM_INT], 'value' => [100, PDO::PARAM_INT]],
-            ['value' => [200, PDO::PARAM_INT]],
+            ['id' => 1, 'value' => 100],
+            ['value' => 200],
         ];
 
         [$params] = $strategy->prepareBulkParameterLists($rows, ['id']);
@@ -89,6 +90,6 @@ final class QuestionMarkPlaceholderStrategyTest extends TestCase
         [$params, $types] = $strategy->prepareBulkParameterLists($rows);
 
         $this->assertEquals([1, 'Alice', 2, 'Bob'], $params);
-        $this->assertEquals([PDO::PARAM_INT, null, null, PDO::PARAM_STR], $types);
+        $this->assertEquals([ParameterType::INTEGER, ParameterType::STRING, ParameterType::INTEGER, ParameterType::STRING], $types);
     }
 }

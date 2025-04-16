@@ -27,16 +27,11 @@ final readonly class DbalManagerFactory
     ) {
     }
 
-    private function getConfig(?DbalBundleConfig $config): DbalBundleConfig
-    {
-        return $config ?? $this->defaultConfig ?? new DbalBundleConfig();
-    }
-
     public function createFinder(?Connection $connection = null): DbalFinder
     {
         return new DbalFinder(
             $connection ?? $this->defaultConnection,
-            $this->deserializer
+            $this->deserializer,
         );
     }
 
@@ -50,7 +45,7 @@ final readonly class DbalManagerFactory
         return new CursorIterator(
             $connection ?? $this->defaultConnection,
             $this->deserializer,
-            $this->getConfig($config)
+            $this->getConfig($config),
         );
     }
 
@@ -59,7 +54,7 @@ final readonly class DbalManagerFactory
         return new OffsetIterator(
             $connection ?? $this->defaultConnection,
             $this->deserializer,
-            $this->getConfig($config)
+            $this->getConfig($config),
         );
     }
 
@@ -80,6 +75,7 @@ final readonly class DbalManagerFactory
     public function createBulkInserter(?Connection $connection = null, ?DbalBundleConfig $config = null): BulkInserter
     {
         $conn = $connection ?? $this->defaultConnection;
+
         return new BulkInserter($conn, $this->createSqlBuilder($conn, $config), $this->getConfig($config));
     }
 
@@ -89,6 +85,7 @@ final readonly class DbalManagerFactory
     public function createBulkUpdater(?Connection $connection = null, ?DbalBundleConfig $config = null): BulkUpdater
     {
         $conn = $connection ?? $this->defaultConnection;
+
         return new BulkUpdater($conn, $this->createSqlBuilder($conn, $config), $this->getConfig($config));
     }
 
@@ -98,6 +95,7 @@ final readonly class DbalManagerFactory
     public function createBulkUpserter(?Connection $connection = null, ?DbalBundleConfig $config = null): BulkUpserter
     {
         $conn = $connection ?? $this->defaultConnection;
+
         return new BulkUpserter($conn, $this->createSqlBuilder($conn, $config), $this->getConfig($config));
     }
 
@@ -117,5 +115,10 @@ final readonly class DbalManagerFactory
             $this->createBulkUpdater($conn, $config),
             $this->createBulkUpserter($conn, $config),
         );
+    }
+
+    private function getConfig(?DbalBundleConfig $config): DbalBundleConfig
+    {
+        return $config ?? $this->defaultConfig ?? new DbalBundleConfig();
     }
 }

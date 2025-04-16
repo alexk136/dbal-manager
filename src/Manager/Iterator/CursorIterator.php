@@ -10,8 +10,8 @@ use Generator;
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
-use ITech\Bundle\DbalBundle\Util\DbalTypeGuesser;
-use ITech\Bundle\DbalBundle\Util\DtoFieldExtractor;
+use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
+use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 use RuntimeException;
 
 final class CursorIterator extends AbstractConfigurableIterator implements CursorIteratorInterface

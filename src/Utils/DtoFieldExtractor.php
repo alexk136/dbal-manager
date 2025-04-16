@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Util;
+namespace ITech\Bundle\DbalBundle\Utils;
 
 use ReflectionClass;
 use ReflectionMethod;

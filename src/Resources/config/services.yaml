@@ -97,7 +97,7 @@ services:
 
     ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:
-            $defaultConnection: '@doctrine.dbal.connection'
+            $defaultConnection: '@Doctrine\DBAL\Connection'
             $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
 
 

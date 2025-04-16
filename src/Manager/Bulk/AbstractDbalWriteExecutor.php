@@ -9,13 +9,16 @@ use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException as UniqueConstraintViolationDbalException;
+use Doctrine\DBAL\ParameterType;
 use Exception;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Exception\UniqueConstraintViolationException;
 use ITech\Bundle\DbalBundle\Exception\WriteDbalException;
-use ITech\Bundle\DbalBundle\Service\Generator\IdGenerator;
+use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
+use ITech\Bundle\DbalBundle\Utils\IdGenerator;
+use Symfony\Component\Uid\Uuid;
 
 abstract class AbstractDbalWriteExecutor
 {
@@ -86,8 +89,11 @@ abstract class AbstractDbalWriteExecutor
 
     protected function setUpdatedAt(array $row, string $timestamp): array
     {
-        $updatedAtField = $this->config->fieldNames[BundleConfigurationInterface::UPDATED_AT_NAME];
-        $row[$updatedAtField] = [$timestamp];
+        $updatedAtField = $this->fieldNames[BundleConfigurationInterface::UPDATED_AT_NAME];
+
+        if (!empty($updatedAtField)) {
+            $row[$updatedAtField] = [$timestamp];
+        }
 
         return $row;
     }
@@ -96,7 +102,7 @@ abstract class AbstractDbalWriteExecutor
     {
         $createdAtField = $this->config->fieldNames[BundleConfigurationInterface::CREATED_AT_NAME];
 
-        if (empty($row[$createdAtField])) {
+        if (!empty($createdAtField) && empty($row[$createdAtField])) {
             $row[$createdAtField] = [$timestamp];
         }
 
@@ -105,18 +111,27 @@ abstract class AbstractDbalWriteExecutor
 
     protected function ensureId(array $row): array
     {
-        $idField = $this->config->fieldNames[BundleConfigurationInterface::ID_NAME];
+        $idField = $this->fieldNames[BundleConfigurationInterface::ID_NAME] ?? BundleConfigurationInterface::ID_NAME;
 
-        if (empty($row[$idField])) {
-            $row[$idField] = [IdGenerator::generateUniqueId()];
+        if (!isset($row[$idField])) {
+            return $row;
         }
+
+        $row[$idField] = match ($row[$idField]) {
+            IdStrategy::UUID => [Uuid::v7(), ParameterType::STRING],
+            IdStrategy::UID => [IdGenerator::generateUniqueId(), ParameterType::STRING],
+            IdStrategy::INT => [random_int(1, PHP_INT_MAX), ParameterType::INTEGER],
+            IdStrategy::STRING => ['id_' . uniqid(), ParameterType::STRING],
+            IdStrategy::AUTO_INCREMENT => null,
+            default => $row[$idField],
+        };
 
         return $row;
     }
 
     protected function normalizeInsertData(array $rows): array
     {
-        $currentTimestamp = date('Y-m-d H:i:s');
+        $currentTimestamp = date($this->config->defaultDateTimeFormat);
 
         return array_map(
             fn (array $row) => $this->normalizeInsertRow($row, $currentTimestamp),
@@ -126,7 +141,7 @@ abstract class AbstractDbalWriteExecutor
 
     protected function normalizeUpdateParamsList(array $rows): array
     {
-        $currentTimestamp = date('Y-m-d H:i:s');
+        $currentTimestamp = date($this->config->defaultDateTimeFormat);
 
         return array_map(
             fn (array $row) => $this->setUpdatedAt($row, $currentTimestamp),
