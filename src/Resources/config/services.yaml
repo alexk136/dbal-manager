@@ -1,0 +1,141 @@
+parameters:
+    dbal.field_names:
+        id: 'id'
+        createdAt: 'created_at'
+        updatedAt: 'updated_at'
+        deletedAt: 'deleted_at'
+    dbal.transaction_isolation_level: !php/const Doctrine\DBAL\TransactionIsolationLevel::REPEATABLE_READ
+    dbal.use_auto_mapper: false
+    dbal.default_dto_group: null
+    dbal.chunk_size: 1000
+    dbal.oder_direction: 'ASC'
+
+services:
+
+    # Десериалиторы
+    ITech\Bundle\DbalBundle\Service\Serialize\SymfonyDtoDeserializer:
+        arguments:
+            $serializer: '@serializer'
+            $defaultGroup: '%dbal.default_dto_group%'
+
+    ITech\Bundle\DbalBundle\Service\Serialize\AutoMapperDtoDeserializer:
+        arguments:
+            $autoMapper: '@?AutoMapper\AutoMapperInterface'
+
+    ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerFactory:
+        arguments:
+            $symfonyDeserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\SymfonyDtoDeserializer'
+            $autoMapperDeserializer: '@?ITech\Bundle\DbalBundle\Service\Serialize\AutoMapperDtoDeserializer'
+            $useAutoMapper: '%dbal.use_auto_mapper%'
+
+    ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializer:
+        factory: [ '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerFactory', 'create' ]
+
+    ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface:
+         alias: ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializer
+
+    # Манагеры
+    ITech\Bundle\DbalBundle\Config\DbalBundleConfig:
+        arguments:
+            $useAutoMapper: '%dbal.use_auto_mapper%'
+            $defaultDtoGroup: '%dbal.default_dto_group%'
+            $chunkSize: '%dbal.chunk_size%'
+            $fieldNames: '%dbal.field_names%'
+            $orderDirection: '%dbal.oder_direction%'
+
+
+    ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Finder\DbalFinder
+
+    ITech\Bundle\DbalBundle\Manager\Finder\DbalFinder:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
+
+    ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Mutator\DbalMutator
+
+    ITech\Bundle\DbalBundle\Manager\Mutator\DbalMutator:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+
+    ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Iterator\CursorIterator
+
+
+    ITech\Bundle\DbalBundle\Manager\Iterator\CursorIterator:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
+
+    ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator
+
+    ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor:
+        abstract: true
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
+            $sqlBuilder: '@ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface'
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpdater:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkDeleter:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
+    ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter
+
+    ITech\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpdater
+
+    ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter
+
+    ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkDeleter
+
+    ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
+        arguments:
+            $defaultConnection: '@Doctrine\DBAL\Connection'
+            $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
+
+
+    ITech\Bundle\DbalBundle\Manager\DbalManager:
+        factory: [ '@ITech\Bundle\DbalBundle\Manager\DbalManagerFactory', 'createManager' ]
+
+
+    # Transactions
+    ITech\Bundle\DbalBundle\Service\Transaction\TransactionService:
+        arguments:
+            - '@Doctrine\DBAL\Connection'
+            - '%dbal.transaction_isolation_level%'
+
+    ITech\Bundle\DbalBundle\Service\Transaction\TransactionServiceInterface:
+        alias: ITech\Bundle\DbalBundle\Service\TransactionService
+
+
+    # SQL Builder
+    ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderFactory:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+
+    ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface:
+        factory: [ '@ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderFactory', 'create' ]
+
+
+

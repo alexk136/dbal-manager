@@ -1,0 +1,5 @@
+{
+  "bundles": {
+    "ITech\\Bundle\\DbalBundle\\ItechDbalBundle": ["all"]
+  }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit colors="true" bootstrap="vendor/autoload.php">
+    <php>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Bundle">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
