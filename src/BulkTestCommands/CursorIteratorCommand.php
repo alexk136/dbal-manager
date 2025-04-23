@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-delete-many',
-    description: 'Удаляет N записей из таблицы test_data_types через deleteMany().',
+    name: 'app:test:cursor-iterator',
+    description: 'Читает N записей из таблицы test_data_types через cursor iterator.',
 )]
-final class BulkDeleteManyCommand extends AbstractTestCommand
+final class CursorIteratorCommand extends AbstractTestCommand
 {
     public function __construct(
         protected Connection $connection,
-        private readonly BulkDeleterInterface $bulkDeleter,
+        private readonly CursorIteratorInterface $cursorIterator,
         private readonly BulkInserterInterface $bulkInserter,
     ) {
         parent::__construct();
@@ -27,7 +27,7 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🗑️ Удаление $this->count записей через bulk delete (чанки по $this->chunkSize), кругов: $this->cycle");
+        $output->writeln("📥 Чтение $this->count записей через cursor iterator (чанки по $this->chunkSize), кругов: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -39,19 +39,30 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
 
-        $idsToDelete = $this->getLastInsertedIds($this->count);
+        $this->cursorIterator->setChunkSize($this->chunkSize)->setOrderDirection('ASC');
 
         $output->writeln('✅ Вставка завершена.');
 
         return $this->runBenchmark(
-            fn (array $unused) => $this->bulkDeleter->setChunkSize($this->chunkSize)->deleteMany(self::TABLE_NAME, $idsToDelete),
+            function (): array {
+                $buffer = [];
+
+                foreach ($this->cursorIterator->iterate(self::TABLE_NAME) as $item) {
+                    $buffer[] = $item;
+
+                    if (count($buffer) >= $this->count) {
+                        break;
+                    }
+                }
+
+                return $buffer;
+            },
             $output,
-            $buffer,
         );
     }
 
     protected function getTestType(): string
     {
-        return 'bulk-delete';
+        return 'cursor-iterator';
     }
 }

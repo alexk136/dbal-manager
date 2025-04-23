@@ -28,7 +28,7 @@ final class BulkInsertManyCommand extends AbstractTestCommand
         $output->writeln("🔄 Вставка $this->count записей через bulk insert (чанки по $this->chunkSize), кругов вставки: $this->cycle");
 
         return $this->runBenchmark(
-            fn (array $buffer) => $this->bulkInserter->setChunkSize($this->chunkSize)->insertMany('test_data_types', $buffer),
+            fn (array $buffer) => $this->bulkInserter->setChunkSize($this->chunkSize)->insertMany(self::TABLE_NAME, $buffer),
             $output,
         );
     }
