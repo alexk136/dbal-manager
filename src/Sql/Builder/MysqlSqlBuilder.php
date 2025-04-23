@@ -7,10 +7,12 @@ namespace ITech\Bundle\DbalBundle\Sql\Builder;
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Sql\Placeholder\PlaceholderStrategyInterface;
 
-readonly class MysqlSqlBuilder implements SqlBuilderInterface
+class MysqlSqlBuilder implements SqlBuilderInterface
 {
+    private array $sqlCache = [];
+
     public function __construct(
-        private PlaceholderStrategyInterface $placeholder,
+        private readonly PlaceholderStrategyInterface $placeholder,
     ) {
     }
 
@@ -21,20 +23,26 @@ readonly class MysqlSqlBuilder implements SqlBuilderInterface
         }
 
         $fields = array_keys($paramsList[0]);
-        $fieldList = implode(', ', $fields);
+        $rowsCount = count($paramsList);
+        $cacheKey = sprintf('%s|%s|%d', $tableName, $isIgnore ? 'IGNORE' : 'INSERT', $rowsCount);
 
-        $sqlPrefix = sprintf('%s INTO `%s` (%s) VALUES',
-            $isIgnore ? 'INSERT IGNORE' : 'INSERT',
-            $tableName,
-            $fieldList,
-        );
+        if (!isset($this->sqlCache[$cacheKey])) {
+            $fieldList = implode(', ', array_map(static fn ($f) => "`$f`", $fields));
+            $sqlPrefix = sprintf('%s INTO `%s` (%s) VALUES',
+                $isIgnore ? 'INSERT IGNORE' : 'INSERT',
+                $tableName,
+                $fieldList,
+            );
 
-        $valueRows = array_map(
-            fn (array $row) => sprintf('(%s)', implode(', ', $this->getValues($row))),
-            $paramsList,
-        );
+            $valueRows = array_map(
+                fn (array $row) => sprintf('(%s)', implode(', ', $this->getValues($row))),
+                $paramsList,
+            );
 
-        return $sqlPrefix . ' ' . implode(', ', $valueRows);
+            $this->sqlCache[$cacheKey] = $sqlPrefix . ' ' . implode(', ', $valueRows);
+        }
+
+        return $this->sqlCache[$cacheKey];
     }
 
     public function prepareBulkParameterLists(array $batchRows, ?array $whereFields = null): array

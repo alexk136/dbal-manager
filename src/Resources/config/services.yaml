@@ -78,13 +78,21 @@ services:
             $deserializer: '@ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface'
             $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
 
-    ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter:
-    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpdater:
-    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
+    ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor:
+        abstract: true
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
             $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
             $sqlBuilder: '@ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface'
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpdater:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
 
     ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface:
         alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter

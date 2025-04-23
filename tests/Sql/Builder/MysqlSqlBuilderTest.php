@@ -64,7 +64,7 @@ final class MysqlSqlBuilderTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
 
-        $sql = $this->builder->getUpdateBulkSql('users', $paramsList, $whereFields);
+        $this->builder->getUpdateBulkSql('users', $paramsList, $whereFields);
     }
 
     public function testGetUpsertBulkSqlWithSimpleReplace(): void

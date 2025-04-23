@@ -23,6 +23,7 @@ use Symfony\Component\Uid\Uuid;
 abstract class AbstractDbalWriteExecutor
 {
     protected array $fieldNames;
+    protected int $chunkSize;
 
     public function __construct(
         protected Connection $connection,
@@ -30,6 +31,13 @@ abstract class AbstractDbalWriteExecutor
         protected DbalBundleConfig $config,
     ) {
         $this->resetConfig();
+    }
+
+    public function setChunkSize(int $chunkSize): static
+    {
+        $this->chunkSize = $chunkSize;
+
+        return $this;
     }
 
     /**
@@ -45,6 +53,7 @@ abstract class AbstractDbalWriteExecutor
     public function resetConfig(): static
     {
         $this->fieldNames = $this->config->fieldNames;
+        $this->chunkSize = $this->config->chunkSize;
 
         return $this;
     }

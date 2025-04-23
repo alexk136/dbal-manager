@@ -27,13 +27,16 @@ final class BulkInserter extends AbstractDbalWriteExecutor implements BulkInsert
             }
         }
 
-        $normalizedList = $this->normalizeInsertData($paramsList);
+        $totalInserted = 0;
 
-        $sql = $this->sqlBuilder->getInsertBulkSql($tableName, $normalizedList, $isIgnore);
+        foreach (array_chunk($paramsList, $this->chunkSize) as $chunk) {
+            $normalizedList = $this->normalizeInsertData($chunk);
+            $sql = $this->sqlBuilder->getInsertBulkSql($tableName, $normalizedList, $isIgnore);
+            [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
+            $totalInserted += $this->executeSql($sql, $flatParams, $types);
+        }
 
-        [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
-
-        return $this->executeSql($sql, $flatParams, $types);
+        return $totalInserted;
     }
 
     /**
