@@ -29,24 +29,24 @@ final class BulkSoftDeleteManyCommand extends AbstractTestCommand
     {
         $output->writeln("🔄 Soft delete $this->count записей через deleteSoftMany() (чанки по $this->chunkSize), кругов: $this->cycle");
 
-        // 1. Генерация и вставка записей
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
             $buffer[] = $this->generateRow();
         }
 
-        $this->bulkInserter->insertMany('test_data_types', $buffer);
+        $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
 
-        // 2. Получение ID для мягкого удаления
         $idsToDelete = $this->getLastInsertedIds($this->count);
 
-        // 3. Benchmark на soft delete
+        $output->writeln('✅ Вставка завершена.');
+
         return $this->runBenchmark(
             fn (array $unused) => $this->bulkDeleter
                 ->setChunkSize($this->chunkSize)
-                ->deleteSoftMany('test_data_types', $idsToDelete),
+                ->deleteSoftMany(self::TABLE_NAME, $idsToDelete),
             $output,
+            $buffer,
         );
     }
 

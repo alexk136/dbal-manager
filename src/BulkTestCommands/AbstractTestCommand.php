@@ -65,7 +65,6 @@ abstract class AbstractTestCommand extends Command
 
     protected function finalize(OutputInterface $output, float $totalElapsed, float $peakMemory, float $avgTime): void
     {
-        $output->writeln('✅ Вставка завершена.');
         $output->writeln(sprintf('⏱ Суммарное время из шагов: %.6f сек', $totalElapsed));
         $output->writeln(sprintf('📦 Пиковое использование памяти: %.6f МБ', $peakMemory));
         $output->writeln(sprintf('⚙️ Среднее время на вставку: %.6f сек', $avgTime));
@@ -95,17 +94,13 @@ abstract class AbstractTestCommand extends Command
         }
     }
 
-    protected function runBenchmark(callable $operation, OutputInterface $output): int
+    protected function runBenchmark(callable $operation, OutputInterface $output, ?array $preGeneratedBuffer = null): int
     {
         $totalElapsed = 0;
         $totalMemory = 0;
 
         for ($i = 0; $i < $this->cycle; ++$i) {
-            $buffer = [];
-
-            for ($j = 0; $j < $this->count; ++$j) {
-                $buffer[] = $this->generateRow();
-            }
+            $buffer = $preGeneratedBuffer ?? array_map(fn () => $this->generateRow(), range(1, $this->count));
 
             gc_collect_cycles();
 

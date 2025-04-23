@@ -35,7 +35,7 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
             $buffer[] = $this->generateRow();
         }
 
-        $this->bulkInserter->insertMany('test_data_types', $buffer);
+        $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
 
         $ids = $this->getLastInsertedIds($this->count);
 
@@ -44,14 +44,17 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
             'name' => 'updated_' . uniqid(),
         ], $ids);
 
+        $output->writeln('✅ Вставка завершена.');
+
         return $this->runBenchmark(
             fn (array $unused) => $this->bulkUpdater
                 ->updateMany(
-                    'test_data_types',
+                    self::TABLE_NAME,
                     $buffer,
                     ['id'],
                 ),
             $output,
+            $buffer,
         );
     }
 
