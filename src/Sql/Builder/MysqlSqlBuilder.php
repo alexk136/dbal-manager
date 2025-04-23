@@ -56,42 +56,59 @@ class MysqlSqlBuilder implements SqlBuilderInterface
             throw new InvalidArgumentException('Bulk update requires at least one where-field to generate CASE conditions.');
         }
 
-        $whereFieldMap = array_flip($whereFields);
-        $whenExpressions = [];
-        $whereConditions = [];
-
-        foreach ($paramsList as $params) {
-            $whereParts = [];
-
-            foreach ($whereFields as $field) {
-                $value = $this->placeholder->formatValue($params[$field]);
-                $whereParts[] = sprintf('%s = %s', $field, $value);
-            }
-
-            $whereExpr = '(' . implode(' AND ', $whereParts) . ')';
-            $whereKey = implode('-', array_map(static fn ($field) => $params[$field], $whereFields));
-
-            $whereConditions[$whereKey] = $whereExpr;
-
-            foreach ($params as $field => $value) {
-                if (isset($whereFieldMap[$field])) {
-                    continue; // skip where-fields
-                }
-
-                $formattedValue = $this->placeholder->formatValue($value);
-                $whenExpressions[$field][] = sprintf('WHEN %s THEN %s', $whereExpr, $formattedValue);
-            }
+        if (empty($paramsList)) {
+            throw new InvalidArgumentException('paramsList must not be empty');
         }
 
-        $setClauses = array_map(
-            static fn ($field, $cases) => sprintf('%s = CASE %s ELSE %s END', $field, implode(' ', $cases), $field),
-            array_keys($whenExpressions),
-            $whenExpressions,
-        );
+        $rowsCount = count($paramsList);
+        $fieldList = implode(',', array_keys($paramsList[0]));
+        $whereKey = implode(',', $whereFields);
+        $cacheKey = sprintf('%s|UPDATE|%s|%d|%s', $tableName, $whereKey, $rowsCount, $fieldList);
 
-        $whereClause = implode(' OR ', array_values($whereConditions));
+        if (!isset($this->sqlCache[$cacheKey])) {
+            $whereFieldMap = array_flip($whereFields);
+            $whenExpressions = [];
+            $whereConditions = [];
 
-        return sprintf('UPDATE `%s` SET %s WHERE %s', $tableName, implode(', ', $setClauses), $whereClause);
+            foreach ($paramsList as $params) {
+                $whereParts = [];
+
+                foreach ($whereFields as $field) {
+                    $value = $this->placeholder->formatValue($params[$field]);
+                    $whereParts[] = sprintf('%s = %s', $field, $value);
+                }
+
+                $whereExpr = '(' . implode(' AND ', $whereParts) . ')';
+                $whereKeyValue = implode('-', array_map(static fn ($field) => $params[$field], $whereFields));
+                $whereConditions[$whereKeyValue] = $whereExpr;
+
+                foreach ($params as $field => $value) {
+                    if (isset($whereFieldMap[$field])) {
+                        continue;
+                    }
+
+                    $formattedValue = $this->placeholder->formatValue($value);
+                    $whenExpressions[$field][] = sprintf('WHEN %s THEN %s', $whereExpr, $formattedValue);
+                }
+            }
+
+            $setClauses = array_map(
+                static fn ($field, $cases) => sprintf('%s = CASE %s ELSE %s END', $field, implode(' ', $cases), $field),
+                array_keys($whenExpressions),
+                $whenExpressions,
+            );
+
+            $whereClause = implode(' OR ', array_values($whereConditions));
+
+            $this->sqlCache[$cacheKey] = sprintf(
+                'UPDATE `%s` SET %s WHERE %s',
+                $tableName,
+                implode(', ', $setClauses),
+                $whereClause,
+            );
+        }
+
+        return $this->sqlCache[$cacheKey];
     }
 
     public function getUpsertBulkSql(string $tableName, array $paramsList, array $replaceFields): string

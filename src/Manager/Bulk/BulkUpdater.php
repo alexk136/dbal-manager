@@ -23,13 +23,18 @@ final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdater
             $whereFields = [$this->fieldNames[BundleConfigurationInterface::ID_NAME]];
         }
 
-        $normalizedList = $this->normalizeUpdateParamsList($paramsList);
+        $totalUpdated = 0;
 
-        $sql = $this->sqlBuilder->getUpdateBulkSql($tableName, $normalizedList, $whereFields);
+        foreach (array_chunk($paramsList, $this->chunkSize) as $chunk) {
+            $normalizedList = $this->normalizeUpdateParamsList($chunk);
 
-        [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList, $whereFields);
+            $sql = $this->sqlBuilder->getUpdateBulkSql($tableName, $normalizedList, $whereFields);
+            [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList, $whereFields);
 
-        return $this->executeSql($sql, $flatParams, $types);
+            $totalUpdated += $this->executeSql($sql, $flatParams, $types);
+        }
+
+        return $totalUpdated;
     }
 
     /**
