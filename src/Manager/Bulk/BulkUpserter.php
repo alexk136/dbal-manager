@@ -19,15 +19,19 @@ final class BulkUpserter extends AbstractDbalWriteExecutor implements BulkUpsert
             return 0;
         }
 
-        $normalizedList = $this->normalizeInsertData($paramsList);
-
         $replaceFields = $this->updateReplaceFields($replaceFields);
+        $totalUpserted = 0;
 
-        $sql = $this->sqlBuilder->getUpsertBulkSql($tableName, $normalizedList, $replaceFields);
+        foreach (array_chunk($paramsList, $this->chunkSize) as $chunk) {
+            $normalizedList = $this->normalizeInsertData($chunk);
 
-        [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
+            $sql = $this->sqlBuilder->getUpsertBulkSql($tableName, $normalizedList, $replaceFields);
+            [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList);
 
-        return $this->executeSql($sql, $flatParams, $types);
+            $totalUpserted += $this->executeSql($sql, $flatParams, $types);
+        }
+
+        return $totalUpserted;
     }
 
     /**

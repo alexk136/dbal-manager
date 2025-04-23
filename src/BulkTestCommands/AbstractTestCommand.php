@@ -7,6 +7,7 @@ namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 use DateTime;
 use Faker\Factory;
 use Faker\Generator;
+use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -135,6 +136,7 @@ abstract class AbstractTestCommand extends Command
     protected function generateRow(): array
     {
         return [
+            'id' => IdStrategy::AUTO_INCREMENT,
             'uuid' => $this->faker->uuid(),
             'name' => $this->faker->words(3, true),
             'price' => $this->faker->randomFloat(2, 1, 10000),
