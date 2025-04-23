@@ -283,6 +283,106 @@ $mutator->insert('api_history', [
 ])
 ```
 
+## BulkTest Console Commands Setup
+
+Для использования тестовых консольных команд, связанных с массовыми DBAL-операциями (`insertMany`, `updateMany`, `upsertMany`, `deleteMany`, `softDeleteMany`), добавьте следующую конфигурацию в ваш `services.yaml`:
+
+```yaml
+services:
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
+            $sqlBuilder: '@ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface'
+
+    ITech\Bundle\DbalBundle\BulkTestCommands\BulkInsertManyCommand:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+        tags: [ 'console.command' ]
+
+    ITech\Bundle\DbalBundle\BulkTestCommands\BulkUpdateManyCommand:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkUpdater: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface'
+        tags: [ 'console.command' ]
+
+    ITech\Bundle\DbalBundle\BulkTestCommands\BulkUpsertManyCommand:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkUpserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface'
+        tags: [ 'console.command' ]
+
+    ITech\Bundle\DbalBundle\BulkTestCommands\BulkDeleteManyCommand:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $bulkDeleter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface'
+            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+        tags: [ 'console.command' ]
+
+    ITech\Bundle\DbalBundle\BulkTestCommands\BulkSoftDeleteManyCommand:
+        arguments:
+            $connection: '@Doctrine\DBAL\Connection'
+            $bulkDeleter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface'
+            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+        tags: [ 'console.command' ]
+```
+
+---
+
+### Тестовая таблица
+
+Для запуска команд можно использовать заранее подготовленную таблицу из SQL-файла:
+
+```
+tests/_db/init.sql
+```
+
+Запусти этот SQL-файл вручную в своей тестовой базе перед выполнением команд.
+
+---
+
+### Использование команд
+
+```bash
+bin/console app:test:bulk-insert-many
+bin/console app:test:bulk-update-many
+bin/console app:test:bulk-upsert-many
+bin/console app:test:bulk-delete-many
+bin/console app:test:bulk-soft-delete-many
+```
+
+Каждая команда поддерживает:
+- `--chunk=<int>` — размер чанка для пакетной обработки
+- `--count=<int>` — количество записей (по умолчанию 1000)
+- `--cycle=<int>` — число повторов вставки/обновления/удаления (для бенчмарка)
+- `--track` — включает логирование результатов
+
+Пример:
+
+```bash
+bin/console app:test:bulk-upsert-many --chunk=200 --count=5000 --cycle=5 --track
+```
+
+---
+
+### Логирование результатов
+
+Если передан флаг `--track`, команда будет сохранять логи производительности в CSV-файл:
+
+```
+var/log/<тип_теста>_<timestamp>.csv
+```
+
+Каждая строка в логе содержит:
+- номер итерации
+- время выполнения
+- использование памяти
+- изменение памяти
+- накопленное время
+
 ## Совместимость
 
 - PHP 8.2+
