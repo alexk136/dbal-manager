@@ -6,6 +6,7 @@ namespace ITech\Bundle\DbalBundle\Manager\Finder;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Query\QueryBuilder;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
@@ -17,6 +18,37 @@ final readonly class DbalFinder implements DbalFinderInterface
         private Connection $connection,
         private DtoDeserializerInterface $deserializer,
     ) {
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function findOne(QueryBuilder $qb, ?string $dtoClass = null): object|array|null
+    {
+        $stmt = $qb->executeQuery();
+        $row = $stmt->fetchAssociative();
+
+        if ($row === false) {
+            return null;
+        }
+
+        return $dtoClass
+            ? $this->deserializer->denormalize($row, $dtoClass)
+            : $row;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function findAll(QueryBuilder $qb, ?string $dtoClass = null): iterable
+    {
+        $stmt = $qb->executeQuery();
+
+        while ($row = $stmt->fetchAssociative()) {
+            yield $dtoClass
+                ? $this->deserializer->denormalize($row, $dtoClass)
+                : $row;
+        }
     }
 
     /**
@@ -36,13 +68,19 @@ final readonly class DbalFinder implements DbalFinderInterface
 
         $stmt = $this->connection->executeQuery($sql, ['id' => $id]);
 
-        return $this->deserializer->denormalize($stmt->fetchAssociative() ?: [], $dtoClass);
+        $row = $stmt->fetchAssociative();
+
+        if ($row === false) {
+            return null;
+        }
+
+        return $this->deserializer->denormalize($row, $dtoClass);
     }
 
     /**
      * @throws Exception
      */
-    public function findByIdList(array $idList, string $tableName, ?string $dtoClass = null, string $idField = BundleConfigurationInterface::ID_NAME): array
+    public function findByIdList(array $idList, string $tableName, ?string $dtoClass = null, string $idField = BundleConfigurationInterface::ID_NAME): iterable
     {
         if (empty($idList)) {
             return [];
@@ -68,9 +106,11 @@ final readonly class DbalFinder implements DbalFinderInterface
 
         $stmt = $this->connection->executeQuery($sql, $params);
 
-        $rows = $stmt->fetchAllAssociative();
-
-        return array_map(fn (array $row) => $this->deserializer->denormalize($row, $dtoClass), $rows);
+        while ($row = $stmt->fetchAssociative()) {
+            yield $dtoClass
+                ? $this->deserializer->denormalize($row, $dtoClass)
+                : $row;
+        }
     }
 
     /**
@@ -96,7 +136,7 @@ final readonly class DbalFinder implements DbalFinderInterface
     {
         $normalizedSql = $this->normalizeSqlLimit($sql);
 
-        $row = $this->connection->fetchAssociative($sql, $params);
+        $row = $this->connection->fetchAssociative($normalizedSql, $params);
 
         if ($row === false) {
             return null;

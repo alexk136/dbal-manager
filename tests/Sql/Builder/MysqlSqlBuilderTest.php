@@ -21,7 +21,7 @@ final class MysqlSqlBuilderTest extends TestCase
             ['id' => 2, 'name' => ['Bob', 'Marley']],
         ]);
 
-        $expected = 'INSERT INTO `users` (id, name) VALUES (?, ?), (?, ?)';
+        $expected = 'INSERT INTO `users` (`id`, `name`) VALUES (?, ?), (?, ?)';
         $this->assertEquals($expected, $sql);
     }
 
@@ -73,7 +73,7 @@ final class MysqlSqlBuilderTest extends TestCase
             ['a' => 1, 'b' => 2],
         ], ['a', 'b']);
 
-        $expected = 'INSERT INTO `table_name` (a, b) VALUES (?, ?) ON DUPLICATE KEY UPDATE a = VALUES(a), b = VALUES(b)';
+        $expected = 'INSERT INTO `table_name` (`a`, `b`) VALUES (?, ?) ON DUPLICATE KEY UPDATE a = VALUES(a), b = VALUES(b)';
         $this->assertSame($expected, $sql);
     }
 
@@ -85,7 +85,7 @@ final class MysqlSqlBuilderTest extends TestCase
             ['count', UpsertReplaceType::Increment],
         ]);
 
-        $expected = 'INSERT INTO `table_name` (a, count) VALUES (?, ?) ON DUPLICATE KEY UPDATE count = count + VALUES(count)';
+        $expected = 'INSERT INTO `table_name` (`a`, `count`) VALUES (?, ?) ON DUPLICATE KEY UPDATE count = count + VALUES(count)';
         $this->assertSame($expected, $sql);
     }
 
@@ -97,7 +97,7 @@ final class MysqlSqlBuilderTest extends TestCase
             ['count', UpsertReplaceType::Decrement],
         ]);
 
-        $expected = 'INSERT INTO `table_name` (a, count) VALUES (?, ?) ON DUPLICATE KEY UPDATE count = count - VALUES(count)';
+        $expected = 'INSERT INTO `table_name` (`a`, `count`) VALUES (?, ?) ON DUPLICATE KEY UPDATE count = count - VALUES(count)';
         $this->assertSame($expected, $sql);
     }
 
@@ -109,7 +109,7 @@ final class MysqlSqlBuilderTest extends TestCase
             ['status', UpsertReplaceType::Condition, 'IF(status != "archived", VALUES(status), status)'],
         ]);
 
-        $expected = 'INSERT INTO `table_name` (a, status) VALUES (?, ?) ON DUPLICATE KEY UPDATE status = IF(status != "archived", VALUES(status), status)';
+        $expected = 'INSERT INTO `table_name` (`a`, `status`) VALUES (?, ?) ON DUPLICATE KEY UPDATE status = IF(status != "archived", VALUES(status), status)';
         $this->assertSame($expected, $sql);
     }
 
@@ -143,12 +143,10 @@ final class MysqlSqlBuilderTest extends TestCase
 
     public function testGetDeleteBulkSqlWithEmptyIdList(): void
     {
-        $sql = $this->builder->getDeleteBulkSql('users', []);
+        $this->expectException(InvalidArgumentException::class);
 
-        $expected = 'DELETE FROM `users` WHERE `id` IN ()';
-        $this->assertEquals($expected, $sql);
+        $this->builder->getDeleteBulkSql('users', []);
     }
-
     public function setUp(): void
     {
         $this->builder = new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy());

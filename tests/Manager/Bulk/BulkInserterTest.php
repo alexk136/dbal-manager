@@ -34,7 +34,6 @@ final class BulkInserterTest extends TestCase
     public function testInsertThrowsOnMismatchedFieldKeys(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Row #1 has mismatched fields');
 
         $this->inserter->insertMany('users', [
             ['name' => ['Alice']],

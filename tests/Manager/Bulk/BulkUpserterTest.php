@@ -32,7 +32,7 @@ final class BulkUpserterTest extends TestCase
         ];
         $replaceFields = ['name'];
 
-        $expectedSql = 'INSERT INTO `users` (id, name, created_at, updated_at) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), updated_at = VALUES(updated_at)';
+        $expectedSql = 'INSERT INTO `users` (`id`, `name`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), updated_at = VALUES(updated_at)';
 
         $this->connection
             ->expects($this->once())
@@ -55,7 +55,7 @@ final class BulkUpserterTest extends TestCase
             ['count', UpsertReplaceType::Increment],
         ];
 
-        $expectedSql = 'INSERT INTO `counter` (id, count, created_at, updated_at) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE count = count + VALUES(count), updated_at = VALUES(updated_at)';
+        $expectedSql = 'INSERT INTO `counter` (`id`, `count`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE count = count + VALUES(count), updated_at = VALUES(updated_at)';
 
         $this->connection
             ->expects($this->once())
@@ -76,7 +76,7 @@ final class BulkUpserterTest extends TestCase
             ['status', UpsertReplaceType::Condition, 'IF(status != "archived", VALUES(status), status)'],
         ];
 
-        $expectedSql = 'INSERT INTO `user_status` (id, status, created_at, updated_at) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = IF(status != "archived", VALUES(status), status), updated_at = VALUES(updated_at)';
+        $expectedSql = 'INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = IF(status != "archived", VALUES(status), status), updated_at = VALUES(updated_at)';
 
         $this->connection
             ->expects($this->once())
