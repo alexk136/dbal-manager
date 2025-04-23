@@ -94,6 +94,9 @@ services:
     ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
         parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
 
+    ITech\Bundle\DbalBundle\Manager\Bulk\BulkDeleter:
+        parent: ITech\Bundle\DbalBundle\Manager\Bulk\AbstractDbalWriteExecutor
+
     ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface:
         alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter
 
@@ -102,6 +105,9 @@ services:
 
     ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface:
         alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter
+
+    ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface:
+        alias: ITech\Bundle\DbalBundle\Manager\Bulk\BulkDeleter
 
     ITech\Bundle\DbalBundle\Manager\DbalManagerFactory:
         arguments:

@@ -15,12 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:test:bulk-update-many',
     description: 'Вставляет N записей и затем обновляет их через updateMany().',
 )]
-class BulkUpdateManyCommand extends AbstractTestCommand
+final class BulkUpdateManyCommand extends AbstractTestCommand
 {
     public function __construct(
+        protected Connection $connection,
         private readonly BulkInserterInterface $bulkInserter,
         private readonly BulkUpdaterInterface $bulkUpdater,
-        private readonly Connection $connection,
     ) {
         parent::__construct();
     }
@@ -58,12 +58,5 @@ class BulkUpdateManyCommand extends AbstractTestCommand
     protected function getTestType(): string
     {
         return 'bulk-update';
-    }
-
-    private function getLastInsertedIds(int $limit): array
-    {
-        return $this->connection
-            ->executeQuery("SELECT id FROM test_data_types ORDER BY id DESC LIMIT $limit")
-            ->fetchFirstColumn();
     }
 }

@@ -9,8 +9,11 @@ use Exception;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface;
 
-class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleterInterface
+final class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleterInterface
 {
+    /**
+     * @throws Exception
+     */
     public function deleteOne(string $tableName, string|int $id): int
     {
         return $this->deleteMany($tableName, [$id]);
@@ -25,15 +28,19 @@ class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleterInterf
             return 0;
         }
 
-        $sql = $this->sqlBuilder->getDeleteBulkSql($tableName, $ids);
-
+        $totalDeleted = 0;
         $idFieldName = $this->fieldNames[BundleConfigurationInterface::ID_NAME];
 
-        $paramsList = array_map(static fn ($id) => [$idFieldName => $id], $ids);
+        foreach (array_chunk($ids, $this->chunkSize) as $chunk) {
+            $sql = $this->sqlBuilder->getDeleteBulkSql($tableName, $chunk);
 
-        [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($paramsList);
+            $paramsList = array_map(static fn ($id) => [$idFieldName => $id], $chunk);
+            [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($paramsList);
 
-        return $this->executeSql($sql, $flatParams, $types);
+            $totalDeleted += $this->executeSql($sql, $flatParams, $types);
+        }
+
+        return $totalDeleted;
     }
 
     /**
@@ -45,23 +52,27 @@ class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleterInterf
             return 0;
         }
 
+        $totalUpdated = 0;
         $idFieldName = $this->fieldNames[BundleConfigurationInterface::ID_NAME];
         $deletedAtFieldName = $this->fieldNames[BundleConfigurationInterface::DELETED_AT_NAME];
         $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
 
-        $paramsList = array_map(
-            static fn ($id) => [
-                $deletedAtFieldName => $now,
-                $idFieldName => $id,
-            ],
-            $ids,
-        );
+        foreach (array_chunk($ids, $this->chunkSize) as $chunk) {
+            $paramsList = array_map(
+                static fn ($id) => [
+                    $deletedAtFieldName => $now,
+                    $idFieldName => $id,
+                ],
+                $chunk,
+            );
 
-        $sql = $this->sqlBuilder->getUpdateBulkSql($tableName, $paramsList, [$idFieldName]);
+            $sql = $this->sqlBuilder->getUpdateBulkSql($tableName, $paramsList, [$idFieldName]);
+            [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($paramsList, [$idFieldName]);
 
-        [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($paramsList, [$idFieldName]);
+            $totalUpdated += $this->executeSql($sql, $flatParams, $types);
+        }
 
-        return $this->executeSql($sql, $flatParams, $types);
+        return $totalUpdated;
     }
 
     /**

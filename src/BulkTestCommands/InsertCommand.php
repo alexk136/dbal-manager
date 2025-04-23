@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 
+use Doctrine\DBAL\Connection;
 use ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,9 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:test:insert',
     description: 'Вставляет N записей в таблицу test_data_types и логирует производительность.',
 )]
-class InsertCommand extends AbstractTestCommand
+final class InsertCommand extends AbstractTestCommand
 {
     public function __construct(
+        protected Connection $connection,
         private readonly DbalMutatorInterface $mutator,
     ) {
         parent::__construct();

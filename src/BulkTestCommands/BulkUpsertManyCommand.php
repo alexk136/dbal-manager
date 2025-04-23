@@ -15,12 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:test:bulk-upsert-many',
     description: 'Вставляет N записей, затем обновляет их через upsertMany().',
 )]
-class BulkUpsertManyCommand extends AbstractTestCommand
+final class BulkUpsertManyCommand extends AbstractTestCommand
 {
     public function __construct(
+        protected Connection $connection,
         private readonly BulkInserterInterface $bulkInserter,
         private readonly BulkUpserterInterface $bulkUpserter,
-        private readonly Connection $connection,
     ) {
         parent::__construct();
     }
@@ -67,12 +67,5 @@ class BulkUpsertManyCommand extends AbstractTestCommand
     protected function getTestType(): string
     {
         return 'bulk-upsert';
-    }
-
-    private function getLastInsertedRows(int $limit): array
-    {
-        return $this->connection
-            ->executeQuery("SELECT id, name FROM test_data_types ORDER BY id DESC LIMIT $limit")
-            ->fetchAllAssociative();
     }
 }

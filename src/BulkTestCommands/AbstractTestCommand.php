@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 
 use DateTime;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Faker\Factory;
 use Faker\Generator;
 use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
@@ -16,6 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractTestCommand extends Command
 {
+    protected const string TABLE_NAME = 'test_data_types';
+
     protected string $csvPath;
     protected bool $track;
     protected int $count;
@@ -26,6 +30,7 @@ abstract class AbstractTestCommand extends Command
     protected Generator $faker;
     protected float $totalElapsed = 0;
     protected float $peakMemory = 0;
+    protected Connection $connection;
 
     abstract protected function getTestType(): string;
 
@@ -151,5 +156,30 @@ abstract class AbstractTestCommand extends Command
             'status' => $this->faker->randomElement(['new', 'processing', 'done']),
             'data_blob' => random_bytes(32),
         ];
+    }
+
+    protected function truncateTable(string $tableName): void
+    {
+        $this->connection->executeStatement(sprintf('TRUNCATE TABLE `%s`', $tableName));
+    }
+
+    protected function getLastInsertedIds(int $limit): array
+    {
+        return $this->connection
+            ->executeQuery('SELECT id FROM ' . self::TABLE_NAME . ' ORDER BY id DESC LIMIT :limit',
+                ['limit' => $limit],
+                ['limit' => ParameterType::INTEGER],
+            )
+            ->fetchFirstColumn();
+    }
+
+    protected function getLastInsertedRows(int $limit): array
+    {
+        return $this->connection
+            ->executeQuery('SELECT id, name FROM ' . self::TABLE_NAME . ' ORDER BY id DESC LIMIT :limit',
+                ['limit' => $limit],
+                ['limit' => ParameterType::INTEGER],
+            )
+            ->fetchAllAssociative();
     }
 }

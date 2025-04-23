@@ -22,6 +22,7 @@ CREATE TABLE `test_data_types` (
     `meta` JSON NOT NULL,                                                     -- JSON объект
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,                -- дата создания
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- автообновляемое поле
+    `deleted_at` DATETIME DEFAULT NULL,                                       -- дата удаления
     `status` ENUM('new', 'processing', 'done') NOT NULL DEFAULT 'new',        -- перечисление
     `data_blob` BLOB                                                          -- бинарные данные
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

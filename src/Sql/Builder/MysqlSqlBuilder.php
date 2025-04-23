@@ -135,13 +135,24 @@ class MysqlSqlBuilder implements SqlBuilderInterface
 
     public function getDeleteBulkSql(string $tableName, array $idList): string
     {
-        $placeholderList = implode(', ', array_fill(0, count($idList), '?'));
+        if (empty($idList)) {
+            throw new InvalidArgumentException('idList must not be empty');
+        }
 
-        return sprintf(
-            'DELETE FROM `%s` WHERE `id` IN (%s)',
-            $tableName,
-            $placeholderList,
-        );
+        $rowsCount = count($idList);
+        $cacheKey = sprintf('%s|DELETE|BY_ID|%d', $tableName, $rowsCount);
+
+        if (!isset($this->sqlCache[$cacheKey])) {
+            $placeholderList = implode(', ', array_fill(0, $rowsCount, '?'));
+
+            $this->sqlCache[$cacheKey] = sprintf(
+                'DELETE FROM `%s` WHERE `id` IN (%s)',
+                $tableName,
+                $placeholderList,
+            );
+        }
+
+        return $this->sqlCache[$cacheKey];
     }
 
     private function getValues(array $row): array

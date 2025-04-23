@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 
+use Doctrine\DBAL\Connection;
 use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,9 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:test:bulk-insert-many',
     description: 'Вставляет N записей в таблицу test_data_types через insertMany().',
 )]
-class BulkInsertManyCommand extends AbstractTestCommand
+final class BulkInsertManyCommand extends AbstractTestCommand
 {
     public function __construct(
+        protected Connection $connection,
         private readonly BulkInserterInterface $bulkInserter,
     ) {
         parent::__construct();
