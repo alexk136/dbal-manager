@@ -75,7 +75,9 @@ final readonly class DbalFinder implements DbalFinderInterface
             return null;
         }
 
-        return $this->deserializer->denormalize($row, $dtoClass);
+        return $dtoClass
+            ? $this->deserializer->denormalize($row, $dtoClass)
+            : $row;
     }
 
     /**

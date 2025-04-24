@@ -67,6 +67,7 @@ abstract class AbstractTestCommand extends Command
         $output->writeln(sprintf('⏱ Суммарное время из шагов: %.6f сек', $totalElapsed));
         $output->writeln(sprintf('📦 Пиковое использование памяти: %.6f МБ', $peakMemory));
         $output->writeln(sprintf('⚙️ Среднее время на вставку: %.6f сек', $avgTime));
+        $output->writeln("\n");
 
         if ($this->track) {
             file_put_contents(

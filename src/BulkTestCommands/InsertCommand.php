@@ -32,7 +32,7 @@ final class InsertCommand extends AbstractTestCommand
                 function ($value) {
                     unset($value['id']);
 
-                    return $this->mutator->insert('test_data_types', $value);
+                    return $this->mutator->insert(self::TABLE_NAME, $value);
                 },
                 $buffer,
             ),
