@@ -11,7 +11,6 @@ use Faker\Factory;
 use Faker\Generator;
 use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,8 +36,8 @@ abstract class AbstractTestCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('count', InputArgument::REQUIRED, 'Количество записей для вставки')
-            ->addOption('track', null, InputOption::VALUE_NONE, 'Включить логирование производительности')
+            ->addOption('count', null, InputOption::VALUE_OPTIONAL, 'Количество записей для вставки', 1)
+            ->addOption('track', null, InputOption::VALUE_OPTIONAL, 'Включить логирование производительности', 0)
             ->addOption('cycle', null, InputOption::VALUE_OPTIONAL, 'Количество кругов прогона теста', 1)
             ->addOption('chunk', null, InputOption::VALUE_OPTIONAL, 'Размер чанка для пакетной вставки', 1000);
     }
@@ -47,7 +46,7 @@ abstract class AbstractTestCommand extends Command
     {
         $this->faker = Factory::create();
 
-        $this->count = (int) $input->getArgument('count');
+        $this->count = (int) $input->getOption('count');
         $this->track = (bool) $input->getOption('track');
         $this->cycle = (int) $input->getOption('cycle');
         $this->chunkSize = (int) $input->getOption('chunk');
@@ -65,7 +64,6 @@ abstract class AbstractTestCommand extends Command
 
     protected function finalize(OutputInterface $output, float $totalElapsed, float $peakMemory, float $avgTime): void
     {
-        $output->writeln('✅ Вставка завершена.');
         $output->writeln(sprintf('⏱ Суммарное время из шагов: %.6f сек', $totalElapsed));
         $output->writeln(sprintf('📦 Пиковое использование памяти: %.6f МБ', $peakMemory));
         $output->writeln(sprintf('⚙️ Среднее время на вставку: %.6f сек', $avgTime));
@@ -95,17 +93,13 @@ abstract class AbstractTestCommand extends Command
         }
     }
 
-    protected function runBenchmark(callable $operation, OutputInterface $output): int
+    protected function runBenchmark(callable $operation, OutputInterface $output, ?array $preGeneratedBuffer = null): int
     {
         $totalElapsed = 0;
         $totalMemory = 0;
 
         for ($i = 0; $i < $this->cycle; ++$i) {
-            $buffer = [];
-
-            for ($j = 0; $j < $this->count; ++$j) {
-                $buffer[] = $this->generateRow();
-            }
+            $buffer = $preGeneratedBuffer ?? array_map(fn () => $this->generateRow(), range(1, $this->count));
 
             gc_collect_cycles();
 

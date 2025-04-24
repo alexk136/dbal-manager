@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
+use ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-delete-many',
-    description: 'Удаляет N записей из таблицы test_data_types через deleteMany().',
+    name: 'app:test:offset-iterator',
+    description: 'Читает N записей из таблицы test_data_types через offset',
 )]
-final class BulkDeleteManyCommand extends AbstractTestCommand
+final class OffsetIteratorCommand extends AbstractTestCommand
 {
     public function __construct(
         protected Connection $connection,
-        private readonly BulkDeleterInterface $bulkDeleter,
+        private readonly OffsetIteratorInterface $offsetIterator,
         private readonly BulkInserterInterface $bulkInserter,
     ) {
         parent::__construct();
@@ -27,24 +27,36 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🗑️ Удаление $this->count записей через bulk delete (чанки по $this->chunkSize), кругов: $this->cycle");
+        $output->writeln("📄 Пагинация $this->count записей через offset iterator (чанки по $this->chunkSize), кругов: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
-
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
             $buffer[] = $this->generateRow();
         }
-
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
 
-        $idsToDelete = $this->getLastInsertedIds($this->count);
+        $this->offsetIterator->setChunkSize($this->chunkSize)->setOrderDirection('ASC');
 
         $output->writeln('✅ Вставка завершена.');
 
+        $sql = 'SELECT * FROM ' . self::TABLE_NAME;
+
         return $this->runBenchmark(
-            fn (array $unused) => $this->bulkDeleter->setChunkSize($this->chunkSize)->deleteMany(self::TABLE_NAME, $idsToDelete),
+            function () use ($sql): array {
+                $buffer = [];
+
+                foreach ($this->offsetIterator->iterate($sql) as $item) {
+                    $buffer[] = $item;
+
+                    if (count($buffer) >= $this->count) {
+                        break;
+                    }
+                }
+
+                return $buffer;
+            },
             $output,
             $buffer,
         );
@@ -52,6 +64,6 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
     protected function getTestType(): string
     {
-        return 'bulk-delete';
+        return 'offset-iterator';
     }
 }

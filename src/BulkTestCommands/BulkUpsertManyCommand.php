@@ -38,7 +38,7 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
         // 1. Вставка первых 10%
         $insertCount = (int) ceil($this->count * 0.1);
         $insertedRows = array_slice($buffer, 0, $insertCount);
-        $this->bulkInserter->insertMany('test_data_types', $insertedRows);
+        $this->bulkInserter->insertMany(self::TABLE_NAME, $insertedRows);
 
         // 2. Получаем реальные ID для вставленных 10%
         $existingRows = $this->getLastInsertedRows($insertCount); // ['id' => ..., 'name' => ...]
@@ -53,6 +53,8 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
             }
         }
 
+        $output->writeln('✅ Вставка завершена.');
+
         return $this->runBenchmark(
             fn (array $unused) => $this->bulkUpserter
                 ->upsertMany(
@@ -61,6 +63,7 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
                     ['id', 'name'],
                 ),
             $output,
+            $buffer,
         );
     }
 

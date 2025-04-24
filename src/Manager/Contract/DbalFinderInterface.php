@@ -67,4 +67,13 @@ interface DbalFinderInterface
      * @return object|array|null найденная запись в виде объекта, массива или null, если запись не найдена
      */
     public function fetchOneBySql(string $sql, array $params, ?string $dtoClass): object|array|null;
+
+    /**
+     * Подсчитывает количество записей в указанной таблице, соответствующих заданным критериям.
+     *
+     * @param string $table название таблицы, в которой выполняется подсчёт
+     * @param array $criteria ассоциативный массив критериев для фильтрации записей (например, ['column' => 'value'])
+     * @return int количество записей, соответствующих критериям
+     */
+    public function count(string $table, array $criteria = []): int;
 }
