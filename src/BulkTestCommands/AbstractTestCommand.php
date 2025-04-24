@@ -11,7 +11,6 @@ use Faker\Factory;
 use Faker\Generator;
 use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,8 +36,8 @@ abstract class AbstractTestCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('count', InputArgument::REQUIRED, 'Количество записей для вставки')
-            ->addOption('track', null, InputOption::VALUE_NONE, 'Включить логирование производительности')
+            ->addOption('count', null, InputOption::VALUE_OPTIONAL, 'Количество записей для вставки', 1)
+            ->addOption('track', null, InputOption::VALUE_OPTIONAL, 'Включить логирование производительности', 0)
             ->addOption('cycle', null, InputOption::VALUE_OPTIONAL, 'Количество кругов прогона теста', 1)
             ->addOption('chunk', null, InputOption::VALUE_OPTIONAL, 'Размер чанка для пакетной вставки', 1000);
     }
@@ -47,7 +46,7 @@ abstract class AbstractTestCommand extends Command
     {
         $this->faker = Factory::create();
 
-        $this->count = (int) $input->getArgument('count');
+        $this->count = (int) $input->getOption('count');
         $this->track = (bool) $input->getOption('track');
         $this->cycle = (int) $input->getOption('cycle');
         $this->chunkSize = (int) $input->getOption('chunk');

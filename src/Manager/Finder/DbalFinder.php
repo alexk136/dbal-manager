@@ -10,6 +10,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 
 final readonly class DbalFinder implements DbalFinderInterface
@@ -145,6 +146,31 @@ final readonly class DbalFinder implements DbalFinderInterface
         return $dtoClass
             ? $this->deserializer->denormalize($row, $dtoClass)
             : $row;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function count(string $table, array $criteria = []): int
+    {
+        $qb = $this->connection->createQueryBuilder();
+
+        $qb->select('COUNT(*)')
+            ->from($table);
+
+        foreach ($criteria as $column => $value) {
+            $param = ':' . $column;
+
+            if (is_array($value)) {
+                $qb->andWhere($qb->expr()->in($column, $param));
+                $qb->setParameter($param, $value, DbalTypeGuesser::guessParameterType($value));
+            } else {
+                $qb->andWhere($qb->expr()->eq($column, $param));
+                $qb->setParameter($param, $value);
+            }
+        }
+
+        return (int) $qb->executeQuery()->fetchOne();
     }
 
     private function normalizeSqlLimit(string $sql): string

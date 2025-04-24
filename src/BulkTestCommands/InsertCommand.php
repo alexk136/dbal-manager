@@ -29,7 +29,11 @@ final class InsertCommand extends AbstractTestCommand
 
         return $this->runBenchmark(
             fn (array $buffer) => array_map(
-                fn ($value) => $this->mutator->insert('test_data_types', $value),
+                function ($value) {
+                    unset($value['id']);
+
+                    return $this->mutator->insert('test_data_types', $value);
+                },
                 $buffer,
             ),
             $output,

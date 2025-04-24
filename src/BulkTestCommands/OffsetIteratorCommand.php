@@ -29,15 +29,13 @@ final class OffsetIteratorCommand extends AbstractTestCommand
     {
         $output->writeln("📄 Пагинация $this->count записей через offset iterator (чанки по $this->chunkSize), кругов: $this->cycle");
 
-        //        $this->truncateTable(self::TABLE_NAME);
-        //
+        $this->truncateTable(self::TABLE_NAME);
         $buffer = [];
-        //
-        //        for ($i = 0; $i < $this->count; ++$i) {
-        //            $buffer[] = $this->generateRow();
-        //        }
-        //
-        //        $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
+
+        for ($i = 0; $i < $this->count; ++$i) {
+            $buffer[] = $this->generateRow();
+        }
+        $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
 
         $this->offsetIterator->setChunkSize($this->chunkSize)->setOrderDirection('ASC');
 
@@ -60,6 +58,7 @@ final class OffsetIteratorCommand extends AbstractTestCommand
                 return $buffer;
             },
             $output,
+            $buffer,
         );
     }
 
