@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-delete-many',
+    name: 'dbal:test:bulk-delete-many',
     description: 'Удаляет N записей из таблицы test_data_types через deleteMany().',
 )]
 final class BulkDeleteManyCommand extends AbstractTestCommand
@@ -34,7 +34,7 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $buffer[] = $this->generateRow();
+            $buffer[] = $this->generateBulkRow();
         }
 
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
@@ -43,11 +43,24 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
         $output->writeln('✅ Вставка завершена.');
 
-        return $this->runBenchmark(
+        $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkDeleter->setChunkSize($this->chunkSize)->deleteMany(self::TABLE_NAME, $idsToDelete),
             $output,
             $buffer,
         );
+
+        $count = (int) $this->connection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from(self::TABLE_NAME)
+            ->executeQuery()->fetchOne();
+
+        if ($count === 0) {
+            $output->writeln("🔎 Проверка: в базе осталась 0 записей — ✅ OK\n");
+        } else {
+            $output->writeln("⚠️ Проверка: в базе остались записи: $count — ❌ ERROR\n");
+        }
+
+        return $result;
     }
 
     protected function getTestType(): string

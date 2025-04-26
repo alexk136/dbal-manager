@@ -6,8 +6,12 @@ namespace ITech\Bundle\DbalBundle\DBAL;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
+use ITech\Bundle\DbalBundle\Utils\ArraySerializer;
+use ITech\Bundle\DbalBundle\Utils\BacktraceHelper;
 use JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -39,7 +43,9 @@ class DbalConnection extends Connection
     {
         $sql = $this->addSqlComment($sql);
 
-        return parent::executeStatement($sql, $params, $types);
+        [$normalizedData, $normalizedTypes] = $this->normalizeData($params, $types);
+
+        return parent::executeStatement($sql, $normalizedData, $normalizedTypes);
     }
 
     /**
@@ -93,7 +99,7 @@ class DbalConnection extends Connection
         }
 
         $context = [
-            'applicationCaller' => $this->getApplicationCaller(),
+            'applicationCaller' => BacktraceHelper::getApplicationCaller(),
             'entryPointController' => $this->getEntryPointClass(),
         ];
 
@@ -120,24 +126,33 @@ class DbalConnection extends Connection
         return '';
     }
 
-    private function getApplicationCaller(): string
+    /**
+     * @throws JsonException
+     */
+    private function normalizeData(array $data, array $types = []): array
     {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-
-        foreach ($backtrace as $i => $item) {
-            $filePath = $item['file'] ?? null;
-
-            if (!$filePath || str_contains($filePath, '/vendor/')) {
-                continue;
-            }
-
-            $caller = $backtrace[$i + 1] ?? null;
-            $class = $caller['class'] ?? null;
-            $function = $caller['function'] ?? null;
-
-            return $class && $function ? sprintf('%s::%s', $class, $function) : '';
+        try {
+            $platform = $this->getDatabasePlatform();
+        } catch (Exception) {
+            return [$data, $types];
         }
 
-        return '';
+        $normalized = [];
+        $normalizedTypes = [];
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $normalized[$key] = ArraySerializer::serialize($value, $platform::class);
+                $normalizedTypes[$key] = ParameterType::STRING;
+            } else {
+                $normalized[$key] = $value;
+
+                if (isset($types[$key])) {
+                    $normalizedTypes[$key] = $types[$key];
+                }
+            }
+        }
+
+        return [$normalized, $normalizedTypes];
     }
 }

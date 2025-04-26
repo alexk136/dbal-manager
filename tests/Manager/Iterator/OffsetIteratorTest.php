@@ -11,6 +11,7 @@ use ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(OffsetIterator::class)]
 final class OffsetIteratorTest extends TestCase
 {
     public function testIterateWithRawData(): void

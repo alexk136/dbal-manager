@@ -33,10 +33,8 @@ final class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleter
 
         foreach (array_chunk($ids, $this->chunkSize) as $chunk) {
             $sql = $this->sqlBuilder->getDeleteBulkSql($tableName, $chunk);
-
             $paramsList = array_map(static fn ($id) => [$idFieldName => $id], $chunk);
             [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($paramsList);
-
             $totalDeleted += $this->executeSql($sql, $flatParams, $types);
         }
 
@@ -55,7 +53,7 @@ final class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleter
         $totalUpdated = 0;
         $idFieldName = $this->fieldNames[BundleConfigurationInterface::ID_NAME];
         $deletedAtFieldName = $this->fieldNames[BundleConfigurationInterface::DELETED_AT_NAME];
-        $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+        $now = (new DateTimeImmutable())->format($this->config->defaultDateTimeFormat);
 
         foreach (array_chunk($ids, $this->chunkSize) as $chunk) {
             $paramsList = array_map(
@@ -68,7 +66,6 @@ final class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleter
 
             $sql = $this->sqlBuilder->getUpdateBulkSql($tableName, $paramsList, [$idFieldName]);
             [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($paramsList, [$idFieldName]);
-
             $totalUpdated += $this->executeSql($sql, $flatParams, $types);
         }
 

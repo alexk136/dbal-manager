@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\Tests\Strategy;
 
 use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(DtoFieldExtractor::class)]
 final class DtoFieldExtractorTest extends TestCase
 {
     public function testGetFieldsFromPublicProperties(): void

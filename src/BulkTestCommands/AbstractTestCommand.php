@@ -7,8 +7,13 @@ namespace ITech\Bundle\DbalBundle\BulkTestCommands;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL120Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Faker\Factory;
 use Faker\Generator;
+use InvalidArgumentException;
+use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
 use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,6 +35,7 @@ abstract class AbstractTestCommand extends Command
     protected float $totalElapsed = 0;
     protected float $peakMemory = 0;
     protected Connection $connection;
+    protected string $cachedPlatform;
 
     abstract protected function getTestType(): string;
 
@@ -60,6 +66,16 @@ abstract class AbstractTestCommand extends Command
 
         $this->globalStart = microtime(true);
         $this->globalMemStart = memory_get_usage(true);
+
+        if (!isset($this->cachedPlatform)) {
+            $platform = $this->connection->getDatabasePlatform();
+
+            $this->cachedPlatform = match ($platform::class) {
+                MySQLPlatform::class => 'mysql',
+                PostgreSQLPlatform::class, PostgreSQL120Platform::class => 'pgsql',
+                default => throw new InvalidArgumentException('Unsupported platform: ' . get_class($platform)),
+            };
+        }
     }
 
     protected function finalize(OutputInterface $output, float $totalElapsed, float $peakMemory, float $avgTime): void
@@ -100,7 +116,7 @@ abstract class AbstractTestCommand extends Command
         $totalMemory = 0;
 
         for ($i = 0; $i < $this->cycle; ++$i) {
-            $buffer = $preGeneratedBuffer ?? array_map(fn () => $this->generateRow(), range(1, $this->count));
+            $buffer = $preGeneratedBuffer ?? array_map(fn () => $this->generateBulkRow(), range(1, $this->count));
 
             gc_collect_cycles();
 
@@ -122,7 +138,7 @@ abstract class AbstractTestCommand extends Command
             if ($this->track) {
                 file_put_contents(
                     $this->csvPath,
-                    sprintf("%d,%.6f,%.6f,%.6f,%.6f\n", $i + 1, $duration, $totalMemory, $memDelta, $totalElapsed),
+                    sprintf('%d,%.6f,%.6f,%.6f,%.6f', $i + 1, $duration, $totalMemory, $memDelta, $totalElapsed),
                     FILE_APPEND,
                 );
             }
@@ -133,9 +149,29 @@ abstract class AbstractTestCommand extends Command
         return Command::SUCCESS;
     }
 
-    protected function generateRow(): array
+    protected function generateNormalRow(): array
     {
-        return [
+        $row = $this->generateBulkRow();
+
+        if ($this->cachedPlatform === 'pgsql') {
+            $row = array_merge($row, [
+                'coordinates' => '{' . implode(',', array_map(
+                    fn () => $this->faker->randomFloat(6, -1000, 1000),
+                    range(1, 5),
+                )) . '}',
+                'float4_coordinates' => '{' . implode(',', array_map(
+                    fn () => (float) number_format($this->faker->randomFloat(6, -1000, 1000), 6, '.', ''),
+                    range(1, 5),
+                )) . '}',
+            ]);
+        }
+
+        return $row;
+    }
+
+    protected function generateBulkRow(): array
+    {
+        $row = [
             'id' => IdStrategy::AUTO_INCREMENT,
             'uuid' => $this->faker->uuid(),
             'name' => $this->faker->words(3, true),
@@ -149,13 +185,53 @@ abstract class AbstractTestCommand extends Command
             'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
             'updated_at' => (new DateTime())->format('Y-m-d H:i:s'),
             'status' => $this->faker->randomElement(['new', 'processing', 'done']),
-            'data_blob' => random_bytes(32),
         ];
+
+        if ($this->cachedPlatform === 'mysql') {
+            $row += [
+                'data_blob' => random_bytes(32),
+            ];
+        }
+
+        if ($this->cachedPlatform === 'pgsql') {
+            $row += [
+                'data_bytea' => '\\x' . bin2hex(random_bytes(32)),
+                'big_value' => $this->faker->numberBetween(100000, 999999999),
+                'float_value' => $this->faker->randomFloat(8, 0, 1000),
+                'small_value' => $this->faker->numberBetween(1, 32767),
+                'text_field' => $this->faker->text(500),
+                'inet_field' => $this->faker->ipv4,
+                'mac_field' => $this->faker->macAddress,
+                'point_field' => sprintf('(%f,%f)', $this->faker->randomFloat(6, -180, 180), $this->faker->randomFloat(6, -90, 90)),
+                'interval_field' => sprintf('%d days', $this->faker->numberBetween(1, 365)),
+                'json_field' => json_encode([
+                    'key' => $this->faker->word,
+                    'value' => $this->faker->sentence,
+                ]),
+                'coordinates' => [
+                    array_map(
+                        fn () => $this->faker->randomFloat(6, -1000, 1000),
+                        range(1, 5),
+                    ),
+                    DbalParameterType::FLOAT_ARRAY,
+                ],
+                'float4_coordinates' => [
+                    array_map(
+                        fn () => (float) number_format($this->faker->randomFloat(6, -1000, 1000), 6, '.', ''),
+                        range(1, 5),
+                    ),
+                    DbalParameterType::FLOAT_ARRAY,
+                ],
+            ];
+        }
+
+        return $row;
     }
 
     protected function truncateTable(string $tableName): void
     {
-        $this->connection->executeStatement(sprintf('TRUNCATE TABLE `%s`', $tableName));
+        $quotedTable = $this->connection->quoteIdentifier($tableName);
+        $this->connection->executeStatement(sprintf('TRUNCATE TABLE %s', $quotedTable));
     }
 
     protected function getLastInsertedIds(int $limit): array

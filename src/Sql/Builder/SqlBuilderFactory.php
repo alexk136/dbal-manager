@@ -7,8 +7,8 @@ namespace ITech\Bundle\DbalBundle\Sql\Builder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL120Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Platforms\SQLitePlatform;
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 
@@ -36,8 +36,7 @@ final readonly class SqlBuilderFactory
 
         return match ($platform::class) {
             MySQLPlatform::class => new MysqlSqlBuilder($placeholder),
-            PostgreSQLPlatform::class => new PostgresSqlBuilder(),
-            SQLitePlatform::class => new SqliteSqlBuilder(),
+            PostgreSQLPlatform::class, PostgreSQL120Platform::class => new PostgresSqlBuilder($placeholder),
             default => throw new InvalidArgumentException("Unsupported platform: {$className}"),
         };
     }

@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-soft-delete-many',
+    name: 'dbal:test:bulk-soft-delete-many',
     description: 'Мягко удаляет N записей из таблицы test_data_types через deleteSoftMany().',
 )]
 final class BulkSoftDeleteManyCommand extends AbstractTestCommand
@@ -29,10 +29,12 @@ final class BulkSoftDeleteManyCommand extends AbstractTestCommand
     {
         $output->writeln("🔄 Soft delete $this->count записей через deleteSoftMany() (чанки по $this->chunkSize), кругов: $this->cycle");
 
+        $this->truncateTable(self::TABLE_NAME);
+
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $buffer[] = $this->generateRow();
+            $buffer[] = $this->generateBulkRow();
         }
 
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
@@ -41,13 +43,25 @@ final class BulkSoftDeleteManyCommand extends AbstractTestCommand
 
         $output->writeln('✅ Вставка завершена.');
 
-        return $this->runBenchmark(
-            fn (array $unused) => $this->bulkDeleter
-                ->setChunkSize($this->chunkSize)
-                ->deleteSoftMany(self::TABLE_NAME, $idsToDelete),
+        $result = $this->runBenchmark(
+            fn (array $unused) => $this->bulkDeleter->setChunkSize($this->chunkSize)->deleteSoftMany(self::TABLE_NAME, $idsToDelete),
             $output,
             $buffer,
         );
+
+        $deletedCount = (int) $this->connection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from(self::TABLE_NAME)
+            ->where('deleted_at IS NOT NULL')
+            ->executeQuery()->fetchOne();
+
+        if ($deletedCount === $this->count) {
+            $output->writeln("🔎 Проверка: всем записям установлен deleted_at — ✅ OK\n");
+        } else {
+            $output->writeln("⚠️ Проверка: ожидалось $this->count записей с deleted_at, найдено: $deletedCount — ❌ ERROR\n");
+        }
+
+        return $result;
     }
 
     protected function getTestType(): string

@@ -12,7 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'app:test:finder-service')]
+#[AsCommand(name: 'dbal:test:finder')]
 final class FinderTestCommand extends AbstractTestCommand
 {
     public function __construct(
@@ -32,7 +32,7 @@ final class FinderTestCommand extends AbstractTestCommand
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $row = $this->generateRow();
+            $row = $this->generateBulkRow();
             $buffer[] = array_merge($row, [
                 'name' => "Benchmark-$i",
                 'price' => $this->faker->randomFloat(2, 100, 10000),

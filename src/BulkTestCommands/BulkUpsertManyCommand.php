@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-upsert-many',
+    name: 'dbal:test:bulk-upsert-many',
     description: 'Вставляет N записей, затем обновляет их через upsertMany().',
 )]
 final class BulkUpsertManyCommand extends AbstractTestCommand
@@ -32,7 +32,7 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $buffer[] = $this->generateRow();
+            $buffer[] = $this->generateBulkRow();
         }
 
         // 1. Вставка первых 10%
@@ -55,16 +55,30 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
 
         $output->writeln('✅ Вставка завершена.');
 
-        return $this->runBenchmark(
+        $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkUpserter
                 ->upsertMany(
-                    'test_data_types',
+                    self::TABLE_NAME,
                     $buffer,
-                    ['id', 'name'],
+                    ['id'],
                 ),
             $output,
             $buffer,
         );
+
+        $totalCount = (int) $this->connection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from(self::TABLE_NAME)
+            ->where('deleted_at IS NOT NULL')
+            ->executeQuery()->fetchOne();
+
+        if ($totalCount === $this->count) {
+            $output->writeln("🔎 Проверка: общее количество записей $totalCount — ✅ OK\n");
+        } else {
+            $output->writeln("⚠️ Проверка: ожидалось $this->count записей, найдено: $totalCount — ❌ ERROR\n");
+        }
+
+        return $result;
     }
 
     protected function getTestType(): string

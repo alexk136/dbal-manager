@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\Tests\Utils;
 
 use ITech\Bundle\DbalBundle\Service\Serialize\SymfonyDtoDeserializer;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -12,6 +13,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+#[CoversClass(SymfonyDtoDeserializer::class)]
 class SymfonyDtoDeserializerTest extends TestCase
 {
     private SymfonyDtoDeserializer $deserializer;

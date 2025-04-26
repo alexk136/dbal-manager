@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-#[AsCommand(name: 'app:test:transaction-service')]
+#[AsCommand(name: 'dbal:test:transaction-service')]
 final class TransactionServiceCommand extends AbstractTestCommand
 {
     public function __construct(
@@ -33,7 +33,7 @@ final class TransactionServiceCommand extends AbstractTestCommand
 
         $output->writeln('🚀 Тест транзакции с commit...');
 
-        $data = self::generateRow();
+        $data = $this->generateNormalRow();
         unset($data['id']);
 
         $this->transactionService->transactional(function () use ($output, $data) {
@@ -60,9 +60,9 @@ final class TransactionServiceCommand extends AbstractTestCommand
         $count = $this->finder->count(self::TABLE_NAME);
 
         if ($count === 1) {
-            $output->writeln('🔎 Проверка: в базе осталась 1 запись — ✅ OK');
+            $output->writeln('🔎 Проверка: в базе осталась 1 запись — ✅ OK' . "\n");
         } else {
-            $output->writeln("⚠️ Проверка: в базе ожидалась 1 запись, найдено: $count — ❌ ERROR");
+            $output->writeln("⚠️ Проверка: в базе ожидалась 1 запись, найдено: $count — ❌ ERROR\n");
         }
 
         return Command::SUCCESS;

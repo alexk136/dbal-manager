@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-update-many',
+    name: 'dbal:test:bulk-update-many',
     description: 'Вставляет N записей и затем обновляет их через updateMany().',
 )]
 final class BulkUpdateManyCommand extends AbstractTestCommand
@@ -29,10 +29,12 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
     {
         $output->writeln("🔄 Генерация и вставка $this->count записей, затем обновление, кругов: $this->cycle");
 
+        $this->truncateTable(self::TABLE_NAME);
+
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $buffer[] = $this->generateRow();
+            $buffer[] = $this->generateBulkRow();
         }
 
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
@@ -46,7 +48,7 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
 
         $output->writeln('✅ Вставка завершена.');
 
-        return $this->runBenchmark(
+        $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkUpdater
                 ->updateMany(
                     self::TABLE_NAME,
@@ -56,6 +58,22 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
             $output,
             $buffer,
         );
+
+        $updatedCount = $this->connection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from(self::TABLE_NAME)
+            ->where('name LIKE :pattern')
+            ->setParameter('pattern', 'updated_%')
+            ->executeQuery()
+            ->fetchOne();
+
+        if ((int) $updatedCount === $this->count) {
+            $output->writeln("🔎 Проверка: обновлено $updatedCount записей — ✅ OK\n");
+        } else {
+            $output->writeln("⚠️ Проверка: ожидалось обновление $this->count записей, найдено: $updatedCount — ❌ ERROR\n");
+        }
+
+        return $result;
     }
 
     protected function getTestType(): string

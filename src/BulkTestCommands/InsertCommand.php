@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:insert',
+    name: 'dbal:test:insert',
     description: 'Вставляет N записей в таблицу test_data_types и логирует производительность.',
 )]
 final class InsertCommand extends AbstractTestCommand
@@ -27,12 +27,22 @@ final class InsertCommand extends AbstractTestCommand
     {
         $output->writeln("🔄 Вставка {$this->count} записей в таблицу `test_data_types`...");
 
+        $buffer = [];
+
+        for ($i = 0; $i < $this->count; ++$i) {
+            $row = $this->generateNormalRow();
+            $buffer[] = array_merge($row, [
+                'name' => "Benchmark-$i",
+                'price' => $this->faker->randomFloat(2, 100, 10000),
+            ]);
+        }
+
         return $this->runBenchmark(
-            fn (array $buffer) => array_map(
-                function ($value) {
+            fn (array $unused) => array_map(
+                function ($value): void {
                     unset($value['id']);
 
-                    return $this->mutator->insert(self::TABLE_NAME, $value);
+                    $this->mutator->insert(self::TABLE_NAME, $value);
                 },
                 $buffer,
             ),
