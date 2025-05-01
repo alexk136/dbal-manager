@@ -6,7 +6,7 @@ namespace Elrise\Bundle\DbalBundle\Manager\Mutator;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalMutatorInterface;
 
 final readonly class DbalMutator implements DbalMutatorInterface
 {

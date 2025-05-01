@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalFinderInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalMutatorInterface;
 use Elrise\Bundle\DbalBundle\Service\Transaction\TransactionServiceInterface;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;

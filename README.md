@@ -163,13 +163,14 @@ $inserter->insert('user_table', [
 
 ID может быть сгенерирован автоматически или задан вручную, в зависимости от стратегии:
 
-| Стратегия            | Описание                                           |
-|----------------------|----------------------------------------------------|
-| `IdStrategy::AUTO_INCREMENT` | Значение не указывается — генерируется на уровне БД |
-| `IdStrategy::UUID`          | Значение генерируется в коде (UUID v7)             |
-| `IdStrategy::UID`           | Значение генерируется в коде (18 символов)         |
-| `IdStrategy::INT`           | Значение генерируется как случайное целое число    |
-| `IdStrategy::STRING`        | Генерируется строка (например, на основе `uniqid()`) |
+| Стратегия                    | Описание                                                                                                      |
+|------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `IdStrategy::AUTO_INCREMENT` | Значение не указывается — генерируется на уровне БД                                                           |
+| `IdStrategy::UUID`           | Значение генерируется в коде (UUID v7)                                                                        |
+| `IdStrategy::UID`            | Значение генерируется в коде (18 символов)                                                                    |
+| `IdStrategy::INT`            | Значение генерируется как случайное целое число                                                               |
+| `IdStrategy::STRING`         | Генерируется строка (например, на основе `uniqid()`)                                                          |
+| `IdStrategy::DEFAULT`        | Значение неоьходимо использовать для работы с Postgres и генерации ID DEFAULT в рамках Insert\Upsert операции |
 
 ## DbalBulkUpdater
 
@@ -337,7 +338,11 @@ services:
 Для запуска команд можно использовать заранее подготовленную таблицу из SQL-файла:
 
 ```
+// для MySQL
 tests/_db/init.sql
+
+// для PostgreSQL
+tests/_db/init_postgres.sql
 ```
 
 Запусти этот SQL-файл вручную в своей тестовой базе перед выполнением команд.
@@ -347,11 +352,18 @@ tests/_db/init.sql
 ### Использование команд
 
 ```bash
-bin/console app:test:bulk-insert-many
-bin/console app:test:bulk-update-many
-bin/console app:test:bulk-upsert-many
-bin/console app:test:bulk-delete-many
-bin/console app:test:bulk-soft-delete-many
+bin/console dbal:test:run-all # Запускакт все команды
+bin/console dbal:test:bulk-insert-many
+bin/console dbal:test:bulk-update-many
+bin/console dbal:test:bulk-upsert-many
+bin/console dbal:test:bulk-delete-many
+bin/console dbal:test:bulk-soft-delete-many
+bin/console dbal:test:cursor-iterator
+bin/console dbal:test:offset-iterator
+bin/console dbal:test:finder
+bin/console dbal:test:mutator
+bin/console dbal:test:transaction-service
+bin/console dbal:test:insert
 ```
 
 Каждая команда поддерживает:
@@ -388,4 +400,4 @@ var/log/<тип_теста>_<timestamp>.csv
 - PHP 8.2+
 - Symfony 7.0+
 - Doctrine DBAL 3.6+
-- MySQL 8 / PostgreSQL поддержка частично (в процессе)
+- MySQL 5.7 / PostgreSQL 16

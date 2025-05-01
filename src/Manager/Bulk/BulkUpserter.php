@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkUpserterInterface;
 use Exception;
 
 final class BulkUpserter extends AbstractDbalWriteExecutor implements BulkUpserterInterface

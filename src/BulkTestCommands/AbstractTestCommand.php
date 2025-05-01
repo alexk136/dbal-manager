@@ -11,7 +11,7 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQL120Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
-use Elrise\Bundle\DbalBundle\Manager\Contract\IdStrategy;
+use Elrise\Bundle\DbalBundle\Enum\IdStrategy;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;

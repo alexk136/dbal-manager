@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalMutatorInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

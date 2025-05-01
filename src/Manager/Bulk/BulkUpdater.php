@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
 use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkUpdaterInterface;
 use Exception;
 
 final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdaterInterface

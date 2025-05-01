@@ -7,7 +7,7 @@ namespace Elrise\Bundle\DbalBundle\Manager\Iterator;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
+use Elrise\Bundle\DbalBundle\Enum\CursorIteratorInterface;
 use Elrise\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 use Elrise\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 use Generator;
