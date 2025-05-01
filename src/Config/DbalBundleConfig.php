@@ -15,7 +15,7 @@ final readonly class DbalBundleConfig implements BundleConfigurationInterface
         public int $chunkSize = 1000,
         public string $orderDirection = 'ASC',
         public string $placeholderStrategy = 'question_mark',
-        public string $defaultDateTimeFormat = 'Y-m-d H:i:s',
+        public string $defaultDateTimeFormat = 'Y-m-d H:i:s', // For Unit test better use 'Y-m-d H:i'
     ) {
     }
 }

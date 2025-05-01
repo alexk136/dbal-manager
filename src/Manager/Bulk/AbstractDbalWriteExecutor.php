@@ -9,18 +9,20 @@ use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException as UniqueConstraintViolationDbalException;
-use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Exception;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
+use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
 use ITech\Bundle\DbalBundle\Exception\UniqueConstraintViolationException;
 use ITech\Bundle\DbalBundle\Exception\WriteDbalException;
+use ITech\Bundle\DbalBundle\Manager\Contract\DbalConfigurableExecutorInterface;
 use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
 use ITech\Bundle\DbalBundle\Utils\IdGenerator;
 use Symfony\Component\Uid\Uuid;
 
-abstract class AbstractDbalWriteExecutor
+abstract class AbstractDbalWriteExecutor implements DbalConfigurableExecutorInterface
 {
     protected array $fieldNames;
     protected int $chunkSize;
@@ -70,6 +72,9 @@ abstract class AbstractDbalWriteExecutor
         }
     }
 
+    /**
+     * @throws WriteDbalException
+     */
     protected function mapDbalException(DbalException $e): Exception
     {
         $message = $e->getMessage();
@@ -101,7 +106,7 @@ abstract class AbstractDbalWriteExecutor
         $updatedAtField = $this->fieldNames[BundleConfigurationInterface::UPDATED_AT_NAME];
 
         if (!empty($updatedAtField)) {
-            $row[$updatedAtField] = [$timestamp];
+            $row[$updatedAtField] = [$timestamp, DbalParameterType::STRING];
         }
 
         return $row;
@@ -112,7 +117,7 @@ abstract class AbstractDbalWriteExecutor
         $createdAtField = $this->config->fieldNames[BundleConfigurationInterface::CREATED_AT_NAME];
 
         if (!empty($createdAtField) && empty($row[$createdAtField])) {
-            $row[$createdAtField] = [$timestamp];
+            $row[$createdAtField] = [$timestamp, DbalParameterType::STRING];
         }
 
         return $row;
@@ -127,11 +132,12 @@ abstract class AbstractDbalWriteExecutor
         }
 
         $row[$idField] = match ($row[$idField]) {
-            IdStrategy::UUID => [Uuid::v7(), ParameterType::STRING],
-            IdStrategy::UID => [IdGenerator::generateUniqueId(), ParameterType::STRING],
-            IdStrategy::INT => [random_int(1, PHP_INT_MAX), ParameterType::INTEGER],
-            IdStrategy::STRING => ['id_' . uniqid(), ParameterType::STRING],
-            IdStrategy::AUTO_INCREMENT => null,
+            IdStrategy::UUID => [Uuid::v7(), DbalParameterType::STRING],
+            IdStrategy::UID => [IdGenerator::generateUniqueId(), DbalParameterType::STRING],
+            IdStrategy::INT => [random_int(1, PHP_INT_MAX), DbalParameterType::INTEGER],
+            IdStrategy::STRING => ['id_' . uniqid(), DbalParameterType::STRING],
+            IdStrategy::AUTO_INCREMENT,
+            IdStrategy::DEFAULT => $this->isPostgres() ? DbalParameterType::default() : [null, DbalParameterType::NULL],
             default => $row[$idField],
         };
 
@@ -164,5 +170,10 @@ abstract class AbstractDbalWriteExecutor
         $row = $this->ensureCreatedAt($row, $timestamp);
 
         return $this->setUpdatedAt($row, $timestamp);
+    }
+
+    private function isPostgres(): bool
+    {
+        return $this->connection->getDatabasePlatform() instanceof PostgreSQLPlatform;
     }
 }

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace ITech\Bundle\DbalBundle\Sql\Placeholder;
 
 use BackedEnum;
+use Doctrine\DBAL\ParameterType;
 use InvalidArgumentException;
+use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
+use ITech\Bundle\DbalBundle\Utils\ArraySerializer;
 use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 
 final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterface
@@ -15,53 +18,57 @@ final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterf
         return '?';
     }
 
-    public function prepareBulkParameterLists(array $batchRows, ?array $whereFields = null): array
+    public function prepareBulkParameterLists(array $batchRows, ?array $whereFields = null, ?string $platform = null): array
     {
         if (empty($batchRows)) {
-            throw new InvalidArgumentException('paramsList must not be empty');
+            throw new InvalidArgumentException('Batch rows must not be empty');
         }
 
         $mergedParams = [];
         $mergedTypes = [];
 
-        if ($whereFields) {
+        if ($whereFields !== null) {
             $whereFieldFlip = array_flip($whereFields);
-            $wherePartValueList = [];
-            $wherePartTypeList = [];
 
-            $setsList = array_map(
-                static fn (array $params) => array_diff_key($params, $whereFieldFlip),
-                $batchRows,
-            );
+            // Вычисляем все поля для SET (те, которые не входят в whereFields)
+            $firstRow = reset($batchRows);
+            $setColumns = array_keys(array_diff_key($firstRow, $whereFieldFlip));
 
-            $fieldList = array_keys(array_merge(...$setsList));
+            // Сначала собираем параметры для каждого поля SET
+            foreach ($setColumns as $column) {
+                foreach ($batchRows as $row) {
+                    $whereFieldsData = array_intersect_key($row, $whereFieldFlip);
 
-            foreach ($fieldList as $field) {
-                foreach ($batchRows as $params) {
-                    if (!array_key_exists($field, $params)) {
+                    // Для CASE нужно id + значение
+                    [$whereValues, $whereTypes] = $this->extractValuesAndTypes($whereFieldsData, $platform);
+                    [$value, $type] = $this->extractSingleValueAndType($row[$column], $platform);
+
+                    if (!$value && !$type) {
                         continue;
                     }
 
-                    $whereFieldValueMap = array_intersect_key($params, $whereFieldFlip);
-                    [$whereValues, $whereTypes] = $this->extractValuesAndTypes($whereFieldValueMap);
-
-                    [$value, $type] = $this->extractSingleValueAndType($params[$field]);
-
                     $mergedParams = array_merge($mergedParams, $whereValues, [$value]);
                     $mergedTypes = array_merge($mergedTypes, $whereTypes, [$type]);
-
-                    $wherePartKey = implode('-', $whereValues);
-                    $wherePartValueList[$wherePartKey] = $whereValues;
-                    $wherePartTypeList[$wherePartKey] = $whereTypes;
                 }
             }
 
-            $mergedParams = array_merge($mergedParams, ...array_values($wherePartValueList));
-            $mergedTypes = array_merge($mergedTypes, ...array_values($wherePartTypeList));
+            // После всех CASE добавляем id-шники для WHERE
+            foreach ($batchRows as $row) {
+                [$whereValues, $whereTypes] = $this->extractValuesAndTypes(array_intersect_key($row, $whereFieldFlip), $platform);
+
+                $mergedParams = array_merge($mergedParams, $whereValues);
+                $mergedTypes = array_merge($mergedTypes, $whereTypes);
+            }
         } else {
+            // Если whereFields нет — просто обычная вставка
             foreach ($batchRows as $params) {
                 foreach ($params as $value) {
-                    [$paramValue, $paramType] = $this->extractSingleValueAndType($value);
+                    [$paramValue, $paramType] = $this->extractSingleValueAndType($value, $platform);
+
+                    if (!$paramValue && !$paramType) {
+                        continue;
+                    }
+
                     $mergedParams[] = $paramValue;
                     $mergedTypes[] = $paramType;
                 }
@@ -71,34 +78,55 @@ final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterf
         return [$mergedParams, $mergedTypes];
     }
 
-    private function extractSingleValueAndType(mixed $value): array
+    private function extractSingleValueAndType(mixed $value, ?string $platform): array
     {
         if ($value instanceof BackedEnum) {
             $value = $value->value;
         }
 
         if (is_array($value)) {
-            $actualValue = $value[0] instanceof BackedEnum ? $value[0]->value : $value[0];
+            if (empty($value)) {
+                return [null, ParameterType::STRING];
+            }
 
-            $type = isset($value[1])
-                ? (is_int($value[1])
-                    ? DbalTypeGuesser::mapLegacyType($value[1])
-                    : $value[1])
-                : DbalTypeGuesser::guessParameterType($actualValue);
+            $actualValue = $value[0];
+            $actualType = $value[1] ?? null;
 
-            return [$actualValue, $type];
+            if ($actualValue instanceof BackedEnum) {
+                $actualValue = $actualValue->value;
+            }
+
+            $type = match (true) {
+                is_int($actualType) => DbalTypeGuesser::mapLegacyType($actualType),
+                $actualType instanceof ParameterType => DbalTypeGuesser::fromDoctrine($actualType),
+                $actualType instanceof DbalParameterType => $actualType,
+                $actualType === null => DbalTypeGuesser::guessParameterType($actualValue),
+                default => throw new InvalidArgumentException(sprintf('Unexpected type for value: %s', get_debug_type($actualType))),
+            };
+
+            $value = $actualValue;
+        } else {
+            $type = DbalTypeGuesser::guessParameterType($value);
         }
 
-        return [$value, DbalTypeGuesser::guessParameterType($value)];
+        if (in_array($type, [DbalParameterType::ARRAY, DbalParameterType::FLOAT_ARRAY, DbalParameterType::JSON], true)) {
+            $value = ArraySerializer::serialize($value, $platform);
+        }
+
+        if ($type === DbalParameterType::DEFAULT) {
+            return [null, null];
+        }
+
+        return [$value, DbalTypeGuesser::toDoctrine($type)];
     }
 
-    private function extractValuesAndTypes(array $map): array
+    private function extractValuesAndTypes(array $map, ?string $platform): array
     {
         $values = [];
         $types = [];
 
         foreach ($map as $value) {
-            [$v, $t] = $this->extractSingleValueAndType($value);
+            [$v, $t] = $this->extractSingleValueAndType($value, $platform);
             $values[] = $v;
             $types[] = $t;
         }

@@ -7,10 +7,12 @@ namespace ITech\Bundle\DbalBundle\Tests\Service;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\TransactionIsolationLevel;
 use ITech\Bundle\DbalBundle\Service\Transaction\TransactionService;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
+#[CoversClass(TransactionService::class)]
 final class TransactionServiceTest extends TestCase
 {
     private MockObject&Connection $connection;

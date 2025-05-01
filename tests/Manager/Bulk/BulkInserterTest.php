@@ -6,63 +6,76 @@ namespace ITech\Bundle\DbalBundle\Tests\Manager\Bulk;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\Exception;
-use Doctrine\DBAL\Exception\ConstraintViolationException;
-use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\DriverException as DbalDriverException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException as UniqueConstraintViolationDbalException;
+use Doctrine\DBAL\ParameterType;
 use InvalidArgumentException;
 use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Exception\UniqueConstraintViolationException;
 use ITech\Bundle\DbalBundle\Exception\WriteDbalException;
 use ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter;
+use ITech\Bundle\DbalBundle\Sql\Builder\MysqlSqlBuilder;
+use ITech\Bundle\DbalBundle\Sql\Builder\PostgresSqlBuilder;
 use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
+use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(BulkInserter::class)]
 final class BulkInserterTest extends TestCase
 {
-    private BulkInserter $inserter;
+    private const string DATE_FORMAT = 'Y-m-d H:i';
+
     private Connection $connection;
-    private SqlBuilderInterface $builder;
+
+    #[DataProvider('sqlBuildersProviderInsertMany')]
+    public function testInsertReturnsRowCount(
+        SqlBuilderInterface $builder,
+        array $paramsList,
+        string $expectedSql,
+        array $expectedParams,
+        array $expectedTypes,
+        int $expectedAffected,
+    ): void {
+        $inserter = $this->createInserter($builder);
+
+        $this->connection
+            ->method('executeStatement')
+            ->with($expectedSql, $expectedParams, $expectedTypes)
+            ->willReturn($expectedAffected);
+
+        $result = $inserter->insertMany('users', $paramsList);
+
+        $this->assertSame($expectedAffected, $result);
+    }
 
     public function testInsertReturnsZeroOnEmptyInput(): void
     {
-        $result = $this->inserter->insertMany('users', []);
+        $inserter = $this->createInserter(new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy()));
+
+        $result = $inserter->insertMany('users', []);
         $this->assertSame(0, $result);
     }
 
     public function testInsertThrowsOnMismatchedFieldKeys(): void
     {
+        $inserter = $this->createInserter(new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy()));
+
         $this->expectException(InvalidArgumentException::class);
 
-        $this->inserter->insertMany('users', [
+        $inserter->insertMany('users', [
             ['name' => ['Alice']],
             ['email' => ['alice@example.com']],
         ]);
     }
 
-    public function testInsertReturnsRowCount(): void
+    #[DataProvider('sqlBuildersProviders')]
+    public function testInsertHandlesUniqueConstraintViolation(SqlBuilderInterface $builder): void
     {
-        $paramsList = [['name' => ['Test']]];
-        $sql = 'INSERT INTO users (name) VALUES (?)';
-        $flatParams = ['id1', '2025-01-01 00:00:00', '2025-01-01 00:00:00', 'Test'];
-        $types = [null, null, null, null];
+        $inserter = $this->createInserter($builder);
 
-        $this->builder->method('getInsertBulkSql')->willReturn($sql);
-        $this->builder->method('prepareBulkParameterLists')->willReturn([$flatParams, $types]);
-
-        $this->connection
-            ->expects($this->once())
-            ->method('executeStatement')
-            ->with($sql, $flatParams, $types)
-            ->willReturn(1);
-
-        $result = $this->inserter->insertMany('users', $paramsList);
-        $this->assertEquals(1, $result);
-    }
-
-    public function testInsertHandlesUniqueConstraintViolation(): void
-    {
         $this->expectException(UniqueConstraintViolationException::class);
 
         $exception = new UniqueConstraintViolationDbalException(
@@ -70,41 +83,38 @@ final class BulkInserterTest extends TestCase
             null,
         );
 
-        $this->builder->method('getInsertBulkSql')->willReturn('INSERT ...');
-        $this->builder->method('prepareBulkParameterLists')->willReturn([[], []]);
-
         $this->connection
             ->method('executeStatement')
             ->willThrowException($exception);
 
-        $this->inserter->insertMany('users', [['name' => ['Test']]]);
+        $inserter->insertMany('users', [['name' => ['Test']]]);
     }
 
-    public function testInsertHandlesCheckConstraintViolation(): void
+    #[DataProvider('sqlBuildersProviders')]
+    public function testInsertHandlesCheckConstraintViolation(SqlBuilderInterface $builder): void
     {
-        $this->expectException(ConstraintViolationException::class);
+        $inserter = $this->createInserter($builder);
 
-        $dbalDriverException = new DriverException(
-            new Exception("Check constraint 'chk_limit' is violated"),
+        $this->expectException(WriteDbalException::class);
+
+        $dbalDriverException = new DbalDriverException(
+            new Exception('Check constraint "chk_limit" is violated'),
             null,
         );
-
-        $this->builder->method('getInsertBulkSql')->willReturn('INSERT ...');
-        $this->builder->method('prepareBulkParameterLists')->willReturn([[], []]);
 
         $this->connection
             ->method('executeStatement')
             ->willThrowException($dbalDriverException);
 
-        $this->inserter->insertMany('users', [['name' => ['Test']]]);
+        $inserter->insertMany('users', [['name' => ['Test']]]);
     }
 
-    public function testInsertHandlesGenericDbalException(): void
+    #[DataProvider('sqlBuildersProviders')]
+    public function testInsertHandlesGenericDbalException(SqlBuilderInterface $builder): void
     {
-        $this->expectException(WriteDbalException::class);
+        $inserter = $this->createInserter($builder);
 
-        $this->builder->method('getInsertBulkSql')->willReturn('INSERT ...');
-        $this->builder->method('prepareBulkParameterLists')->willReturn([[], []]);
+        $this->expectException(WriteDbalException::class);
 
         $this->connection
             ->method('executeStatement')
@@ -113,26 +123,71 @@ final class BulkInserterTest extends TestCase
                 null,
             ));
 
-        $this->inserter->insertMany('users', [['name' => ['Test']]]);
+        $inserter->insertMany('users', [['name' => ['Test']]]);
+    }
+
+    public static function sqlBuildersProviderInsertMany(): array
+    {
+        $now = date(self::DATE_FORMAT);
+
+        return [
+            'mysql' => [
+                new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy()),
+                [
+                    ['name' => ['Test1']],
+                    ['name' => ['Test2']],
+                ],
+                'INSERT INTO `users` (`name`, `created_at`, `updated_at`) VALUES (?, ?, ?), (?, ?, ?)',
+                ['Test1', $now, $now, 'Test2', $now, $now],
+                [
+                    ParameterType::STRING, ParameterType::STRING, ParameterType::STRING,
+                    ParameterType::STRING, ParameterType::STRING, ParameterType::STRING,
+                ],
+                2,
+            ],
+            'postgres' => [
+                new PostgresSqlBuilder(new QuestionMarkPlaceholderStrategy()),
+                [
+                    ['name' => ['Test1']],
+                    ['name' => ['Test2']],
+                ],
+                'INSERT INTO "users" ("name", "created_at", "updated_at") VALUES (?, ?, ?), (?, ?, ?)',
+                ['Test1', $now, $now, 'Test2', $now, $now],
+                [
+                    ParameterType::STRING, ParameterType::STRING, ParameterType::STRING,
+                    ParameterType::STRING, ParameterType::STRING, ParameterType::STRING,
+                ],
+                2,
+            ],
+        ];
+    }
+
+    public static function sqlBuildersProviders(): array
+    {
+        return [
+            'mysql' => [new MysqlSqlBuilder(new QuestionMarkPlaceholderStrategy())],
+            'postgres' => [new PostgresSqlBuilder(new QuestionMarkPlaceholderStrategy())],
+        ];
     }
 
     protected function setUp(): void
     {
         $this->connection = $this->createMock(Connection::class);
-        $this->builder = $this->createMock(SqlBuilderInterface::class);
+    }
 
-        $config = new DbalBundleConfig(
-            fieldNames: [
-                BundleConfigurationInterface::ID_NAME => 'id',
-                BundleConfigurationInterface::CREATED_AT_NAME => 'created_at',
-                BundleConfigurationInterface::UPDATED_AT_NAME => 'updated_at',
-            ],
-            useAutoMapper: false,
-            defaultDtoGroup: '',
-            chunkSize: 1000,
-            orderDirection: 'ASC',
+    private function createInserter(SqlBuilderInterface $builder): BulkInserter
+    {
+        return new BulkInserter(
+            $this->connection,
+            $builder,
+            new DbalBundleConfig(
+                fieldNames: [
+                    BundleConfigurationInterface::ID_NAME => 'id',
+                    BundleConfigurationInterface::CREATED_AT_NAME => 'created_at',
+                    BundleConfigurationInterface::UPDATED_AT_NAME => 'updated_at',
+                ],
+                defaultDateTimeFormat: self::DATE_FORMAT,
+            ),
         );
-
-        $this->inserter = new BulkInserter($this->connection, $this->builder, $config);
     }
 }

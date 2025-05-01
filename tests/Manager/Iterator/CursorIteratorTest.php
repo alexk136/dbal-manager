@@ -9,8 +9,10 @@ use Doctrine\DBAL\Result;
 use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
 use ITech\Bundle\DbalBundle\Manager\Iterator\CursorIterator;
 use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(CursorIterator::class)]
 class CursorIteratorTest extends TestCase
 {
     public function testIterateWithRawData(): void

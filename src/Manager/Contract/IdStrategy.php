@@ -11,4 +11,5 @@ enum IdStrategy
     case UUID;
     case INT;
     case STRING;
+    case DEFAULT;
 }

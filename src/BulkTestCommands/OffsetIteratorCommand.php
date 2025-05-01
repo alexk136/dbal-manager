@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:offset-iterator',
+    name: 'dbal:test:offset-iterator',
     description: 'Читает N записей из таблицы test_data_types через offset',
 )]
 final class OffsetIteratorCommand extends AbstractTestCommand
@@ -33,7 +33,7 @@ final class OffsetIteratorCommand extends AbstractTestCommand
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $buffer[] = $this->generateRow();
+            $buffer[] = $this->generateBulkRow();
         }
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
 

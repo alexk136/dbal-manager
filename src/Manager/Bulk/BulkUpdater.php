@@ -27,10 +27,8 @@ final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdater
 
         foreach (array_chunk($paramsList, $this->chunkSize) as $chunk) {
             $normalizedList = $this->normalizeUpdateParamsList($chunk);
-
             $sql = $this->sqlBuilder->getUpdateBulkSql($tableName, $normalizedList, $whereFields);
             [$flatParams, $types] = $this->sqlBuilder->prepareBulkParameterLists($normalizedList, $whereFields);
-
             $totalUpdated += $this->executeSql($sql, $flatParams, $types);
         }
 

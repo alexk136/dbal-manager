@@ -53,7 +53,7 @@ final class CursorIterator extends AbstractConfigurableIterator implements Curso
             ];
 
             $types = [
-                'cursor' => DbalTypeGuesser::guessParameterType($cursor),
+                'cursor' => DbalTypeGuesser::toDoctrine(DbalTypeGuesser::guessParameterType($cursor)),
                 'limit' => ParameterType::INTEGER,
             ];
 

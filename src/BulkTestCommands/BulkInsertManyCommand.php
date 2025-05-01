@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:bulk-insert-many',
+    name: 'dbal:test:bulk-insert-many',
     description: 'Вставляет N записей в таблицу test_data_types через insertMany().',
 )]
 final class BulkInsertManyCommand extends AbstractTestCommand
@@ -27,10 +27,25 @@ final class BulkInsertManyCommand extends AbstractTestCommand
     {
         $output->writeln("🔄 Вставка $this->count записей через bulk insert (чанки по $this->chunkSize), кругов вставки: $this->cycle");
 
-        return $this->runBenchmark(
+        $this->truncateTable(self::TABLE_NAME);
+
+        $result = $this->runBenchmark(
             fn (array $buffer) => $this->bulkInserter->setChunkSize($this->chunkSize)->insertMany(self::TABLE_NAME, $buffer),
             $output,
         );
+
+        $count = (int) $this->connection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from(self::TABLE_NAME)
+            ->executeQuery()->fetchOne();
+
+        if ($count === $this->count) {
+            $output->writeln("🔎 Проверка: вставлено $count записей — ✅ OK\n");
+        } else {
+            $output->writeln("⚠️ Проверка: ожидалось $this->count записей, найдено: $count — ❌ ERROR\n");
+        }
+
+        return $result;
     }
 
     protected function getTestType(): string

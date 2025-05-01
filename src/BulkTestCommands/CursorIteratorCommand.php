@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:test:cursor-iterator',
+    name: 'dbal:test:cursor-iterator',
     description: 'Читает N записей из таблицы test_data_types через cursor iterator.',
 )]
 final class CursorIteratorCommand extends AbstractTestCommand
@@ -34,7 +34,7 @@ final class CursorIteratorCommand extends AbstractTestCommand
         $buffer = [];
 
         for ($i = 0; $i < $this->count; ++$i) {
-            $buffer[] = $this->generateRow();
+            $buffer[] = $this->generateBulkRow();
         }
 
         $this->bulkInserter->insertMany(self::TABLE_NAME, $buffer);
