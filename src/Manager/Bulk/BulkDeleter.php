@@ -6,7 +6,7 @@ namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
 use DateTimeImmutable;
 use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkDeleterInterface;
 use Exception;
 
 final class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleterInterface

@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalFinderInterface;
 use Elrise\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 use Elrise\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 use Elrise\Bundle\DbalBundle\Utils\DtoFieldExtractor;

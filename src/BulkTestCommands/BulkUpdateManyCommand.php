@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkInserterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkUpdaterInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

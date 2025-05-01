@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Elrise\Bundle\DbalBundle\Manager;
 
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkInserterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkUpdaterInterface;
+use Elrise\Bundle\DbalBundle\Enum\BulkUpserterInterface;
+use Elrise\Bundle\DbalBundle\Enum\CursorIteratorInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalFinderInterface;
+use Elrise\Bundle\DbalBundle\Enum\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Enum\OffsetIteratorInterface;
 
 final readonly class DbalManager
 {

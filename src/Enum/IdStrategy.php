@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Elrise\Bundle\DbalBundle\Manager\Contract;
+namespace Elrise\Bundle\DbalBundle\Enum;
 
 enum IdStrategy
 {

@@ -7,7 +7,7 @@ namespace Elrise\Bundle\DbalBundle\Manager\Iterator;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use Elrise\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
+use Elrise\Bundle\DbalBundle\Enum\OffsetIteratorInterface;
 use Generator;
 
 final class OffsetIterator extends AbstractConfigurableIterator implements OffsetIteratorInterface
