@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Strategy;
+namespace Elrise\Bundle\DbalBundle\Tests\Strategy;
 
-use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
+use Elrise\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

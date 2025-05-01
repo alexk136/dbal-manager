@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Manager\Iterator;
+namespace Elrise\Bundle\DbalBundle\Tests\Manager\Iterator;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
-use ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use Elrise\Bundle\DbalBundle\Config\DbalBundleConfig;
+use Elrise\Bundle\DbalBundle\Manager\Iterator\OffsetIterator;
+use Elrise\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(OffsetIterator::class)]

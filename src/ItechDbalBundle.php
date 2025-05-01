@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle;
+namespace Elrise\Bundle\DbalBundle;
 
 use Doctrine\DBAL\Types\Type;
-use ITech\Bundle\DbalBundle\DBAL\Type\Float4ArrayType;
-use ITech\Bundle\DbalBundle\DBAL\Type\FloatArrayType;
+use Elrise\Bundle\DbalBundle\DBAL\Type\Float4ArrayType;
+use Elrise\Bundle\DbalBundle\DBAL\Type\FloatArrayType;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

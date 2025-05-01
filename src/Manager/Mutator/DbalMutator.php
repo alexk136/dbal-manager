@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Mutator;
+namespace Elrise\Bundle\DbalBundle\Manager\Mutator;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
 
 final readonly class DbalMutator implements DbalMutatorInterface
 {

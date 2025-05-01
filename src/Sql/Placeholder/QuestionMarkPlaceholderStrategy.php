@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Sql\Placeholder;
+namespace Elrise\Bundle\DbalBundle\Sql\Placeholder;
 
 use BackedEnum;
 use Doctrine\DBAL\ParameterType;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
+use Elrise\Bundle\DbalBundle\Utils\ArraySerializer;
+use Elrise\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
-use ITech\Bundle\DbalBundle\Utils\ArraySerializer;
-use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 
 final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterface
 {

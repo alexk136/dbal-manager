@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Sql\Placeholder;
+namespace Elrise\Bundle\DbalBundle\Tests\Sql\Placeholder;
 
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
+use Elrise\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
-use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;

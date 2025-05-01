@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Sql\Builder;
+namespace Elrise\Bundle\DbalBundle\Sql\Builder;
 
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 
 final class MysqlSqlBuilder extends AbstractSqlBuilder implements SqlBuilderInterface
 {

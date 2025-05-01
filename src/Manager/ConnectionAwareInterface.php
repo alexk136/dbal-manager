@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Itech\Bundle\DbalBundle\Manager;
+namespace Elrise\Bundle\DbalBundle\Manager;
 
 use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\DBAL\DbalConnection;
+use Elrise\Bundle\DbalBundle\DBAL\DbalConnection;
 
 interface ConnectionAwareInterface
 {

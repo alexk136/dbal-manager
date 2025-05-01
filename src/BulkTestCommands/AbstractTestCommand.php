@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\BulkTestCommands;
+namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
@@ -10,11 +10,11 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQL120Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
+use Elrise\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
-use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

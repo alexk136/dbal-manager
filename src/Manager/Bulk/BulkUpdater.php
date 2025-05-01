@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Bulk;
+namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
 use Exception;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
 
 final class BulkUpdater extends AbstractDbalWriteExecutor implements BulkUpdaterInterface
 {

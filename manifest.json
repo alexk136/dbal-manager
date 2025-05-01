@@ -1,5 +1,5 @@
 {
   "bundles": {
-    "ITech\\Bundle\\DbalBundle\\ItechDbalBundle": ["all"]
+    "Elrise\\Bundle\\DbalBundle\\ItechDbalBundle": ["all"]
   }
 }

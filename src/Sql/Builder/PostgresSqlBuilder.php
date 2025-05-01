@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Sql\Builder;
+namespace Elrise\Bundle\DbalBundle\Sql\Builder;
 
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
 
 final class PostgresSqlBuilder extends AbstractSqlBuilder implements SqlBuilderInterface
 {

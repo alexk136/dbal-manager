@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Manager\Bulk;
+namespace Elrise\Bundle\DbalBundle\Tests\Manager\Bulk;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\Exception;
 use Doctrine\DBAL\Exception\DriverException as DbalDriverException;
 use Doctrine\DBAL\ParameterType;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
-use ITech\Bundle\DbalBundle\Exception\WriteDbalException;
-use ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter;
-use ITech\Bundle\DbalBundle\Sql\Builder\MysqlSqlBuilder;
-use ITech\Bundle\DbalBundle\Sql\Builder\PostgresSqlBuilder;
-use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
-use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Config\DbalBundleConfig;
+use Elrise\Bundle\DbalBundle\Exception\WriteDbalException;
+use Elrise\Bundle\DbalBundle\Manager\Bulk\BulkUpserter;
+use Elrise\Bundle\DbalBundle\Sql\Builder\MysqlSqlBuilder;
+use Elrise\Bundle\DbalBundle\Sql\Builder\PostgresSqlBuilder;
+use Elrise\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
+use Elrise\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

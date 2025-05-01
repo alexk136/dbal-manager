@@ -1,22 +1,20 @@
 {
-  "name": "itech/dbal-bundle",
-  "description": "Dbal bundle",
+  "name": "alexk136/dbal-bundle",
+  "description": "High-performance DBAL operations bundle for Symfony with support for bulk insert, update, upsert, delete and streaming queries.",
   "type": "symfony-bundle",
   "license": "proprietary",
-  "version": "1.0.0",
   "authors": [
     {
       "name": "Alex",
-      "email": "aleksandr.k@itechpsp.com"
+      "email": "alexk@elrise.ru"
     }
   ],
   "require": {
-    "php": "~8.3",
+    "php": "~8.2",
     "ext-json": "*",
     "ext-pdo": "*",
     "doctrine/dbal": "^4.2",
     "doctrine/doctrine-bundle": "^2.14",
-    "jolicode/automapper": "^9.3",
     "symfony/config": "^7.2",
     "symfony/dependency-injection": "^7.2",
     "symfony/http-kernel": "^7.2",
@@ -25,12 +23,12 @@
   },
   "autoload": {
     "psr-4": {
-      "ITech\\Bundle\\DbalBundle\\": "src/"
+      "Elrise\\Bundle\\DbalBundle\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "ITech\\Bundle\\DbalBundle\\Tests\\": "tests/"
+      "Elrise\\Bundle\\DbalBundle\\Tests\\": "tests/"
     }
   },
   "config": {

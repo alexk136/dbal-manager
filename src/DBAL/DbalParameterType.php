@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\DBAL;
+namespace Elrise\Bundle\DbalBundle\DBAL;
 
 enum DbalParameterType
 {

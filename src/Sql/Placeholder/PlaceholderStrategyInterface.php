@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Sql\Placeholder;
+namespace Elrise\Bundle\DbalBundle\Sql\Placeholder;
 
 use InvalidArgumentException;
 

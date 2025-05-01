@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Utils;
+namespace Elrise\Bundle\DbalBundle\Tests\Utils;
 
-use ITech\Bundle\DbalBundle\Utils\IdGenerator;
+use Elrise\Bundle\DbalBundle\Utils\IdGenerator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

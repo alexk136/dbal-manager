@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Bulk;
+namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
@@ -10,16 +10,16 @@ use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException as UniqueConstraintViolationDbalException;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Config\DbalBundleConfig;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
+use Elrise\Bundle\DbalBundle\Exception\UniqueConstraintViolationException;
+use Elrise\Bundle\DbalBundle\Exception\WriteDbalException;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalConfigurableExecutorInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\IdStrategy;
+use Elrise\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
+use Elrise\Bundle\DbalBundle\Utils\IdGenerator;
 use Exception;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
-use ITech\Bundle\DbalBundle\Exception\UniqueConstraintViolationException;
-use ITech\Bundle\DbalBundle\Exception\WriteDbalException;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalConfigurableExecutorInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\IdStrategy;
-use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
-use ITech\Bundle\DbalBundle\Utils\IdGenerator;
 use Symfony\Component\Uid\Uuid;
 
 abstract class AbstractDbalWriteExecutor implements DbalConfigurableExecutorInterface

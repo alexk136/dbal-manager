@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Contract;
+namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 
 use Generator;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\DBAL;
+namespace Elrise\Bundle\DbalBundle\DBAL;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
@@ -10,8 +10,8 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
-use ITech\Bundle\DbalBundle\Utils\ArraySerializer;
-use ITech\Bundle\DbalBundle\Utils\BacktraceHelper;
+use Elrise\Bundle\DbalBundle\Utils\ArraySerializer;
+use Elrise\Bundle\DbalBundle\Utils\BacktraceHelper;
 use JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\RequestStack;
