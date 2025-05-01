@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Finder;
+namespace Elrise\Bundle\DbalBundle\Manager\Finder;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
-use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
-use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
+use Elrise\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use Elrise\Bundle\DbalBundle\Utils\DbalTypeGuesser;
+use Elrise\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 
 final readonly class DbalFinder implements DbalFinderInterface
 {

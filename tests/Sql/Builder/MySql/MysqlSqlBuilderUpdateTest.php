@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Sql\Builder\MySql;
+namespace Elrise\Bundle\DbalBundle\Tests\Sql\Builder\MySql;
 
+use Elrise\Bundle\DbalBundle\Sql\Builder\MysqlSqlBuilder;
+use Elrise\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Sql\Builder\MysqlSqlBuilder;
-use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

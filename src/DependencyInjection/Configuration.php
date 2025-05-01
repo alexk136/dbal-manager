@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\DependencyInjection;
+namespace Elrise\Bundle\DbalBundle\DependencyInjection;
 
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 

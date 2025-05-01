@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager;
+namespace Elrise\Bundle\DbalBundle\Manager;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
-use ITech\Bundle\DbalBundle\Manager\Bulk\BulkInserter;
-use ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpdater;
-use ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter;
-use ITech\Bundle\DbalBundle\Manager\Finder\DbalFinder;
-use ITech\Bundle\DbalBundle\Manager\Iterator\CursorIterator;
-use ITech\Bundle\DbalBundle\Manager\Iterator\OffsetIterator;
-use ITech\Bundle\DbalBundle\Manager\Mutator\DbalMutator;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
-use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderFactory;
-use ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
+use Elrise\Bundle\DbalBundle\Config\DbalBundleConfig;
+use Elrise\Bundle\DbalBundle\Manager\Bulk\BulkInserter;
+use Elrise\Bundle\DbalBundle\Manager\Bulk\BulkUpdater;
+use Elrise\Bundle\DbalBundle\Manager\Bulk\BulkUpserter;
+use Elrise\Bundle\DbalBundle\Manager\Finder\DbalFinder;
+use Elrise\Bundle\DbalBundle\Manager\Iterator\CursorIterator;
+use Elrise\Bundle\DbalBundle\Manager\Iterator\OffsetIterator;
+use Elrise\Bundle\DbalBundle\Manager\Mutator\DbalMutator;
+use Elrise\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use Elrise\Bundle\DbalBundle\Sql\Builder\SqlBuilderFactory;
+use Elrise\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface;
 
 final readonly class DbalManagerFactory
 {

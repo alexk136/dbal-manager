@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\BulkTestCommands;
+namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
 use LogicException;

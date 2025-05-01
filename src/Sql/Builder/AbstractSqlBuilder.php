@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Sql\Builder;
+namespace Elrise\Bundle\DbalBundle\Sql\Builder;
 
+use Elrise\Bundle\DbalBundle\Sql\Placeholder\PlaceholderStrategyInterface;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Sql\Placeholder\PlaceholderStrategyInterface;
 
 abstract class AbstractSqlBuilder implements SqlBuilderInterface
 {

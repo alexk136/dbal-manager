@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Service;
+namespace Elrise\Bundle\DbalBundle\Tests\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\TransactionIsolationLevel;
-use ITech\Bundle\DbalBundle\Service\Transaction\TransactionService;
+use Elrise\Bundle\DbalBundle\Service\Transaction\TransactionService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

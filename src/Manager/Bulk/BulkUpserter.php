@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Bulk;
+namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface;
 use Exception;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface;
 
 final class BulkUpserter extends AbstractDbalWriteExecutor implements BulkUpserterInterface
 {

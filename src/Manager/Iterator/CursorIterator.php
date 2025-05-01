@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Iterator;
+namespace Elrise\Bundle\DbalBundle\Manager\Iterator;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
+use Elrise\Bundle\DbalBundle\Utils\DbalTypeGuesser;
+use Elrise\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 use Generator;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
-use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
-use ITech\Bundle\DbalBundle\Utils\DtoFieldExtractor;
 use RuntimeException;
 
 final class CursorIterator extends AbstractConfigurableIterator implements CursorIteratorInterface

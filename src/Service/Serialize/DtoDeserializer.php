@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Service\Serialize;
+namespace Elrise\Bundle\DbalBundle\Service\Serialize;
 
 final readonly class DtoDeserializer implements DtoDeserializerInterface
 {

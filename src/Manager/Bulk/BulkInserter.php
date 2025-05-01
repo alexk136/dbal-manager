@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Bulk;
+namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
 use Exception;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
 
 final class BulkInserter extends AbstractDbalWriteExecutor implements BulkInserterInterface
 {

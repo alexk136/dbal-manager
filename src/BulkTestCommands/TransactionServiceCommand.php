@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\BulkTestCommands;
+namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 
 use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
-use ITech\Bundle\DbalBundle\Service\Transaction\TransactionServiceInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Service\Transaction\TransactionServiceInterface;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

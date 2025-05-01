@@ -61,7 +61,7 @@ composer require itech/dbal-bundle
 Зарегистрируйте бандл в `config/bundles.php`:
 
 ```php
-ITech\Bundle\DbalBundle\ItechDbalBundle::class::class => ['all' => true],
+Elrise\Bundle\DbalBundle\ItechDbalBundle::class::class => ['all' => true],
 ```
 
 
@@ -289,44 +289,44 @@ $mutator->insert('api_history', [
 
 ```yaml
 services:
-    ITech\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
+    Elrise\Bundle\DbalBundle\Manager\Bulk\BulkUpserter:
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
-            $config: '@ITech\Bundle\DbalBundle\Config\DbalBundleConfig'
-            $sqlBuilder: '@ITech\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface'
+            $config: '@Elrise\Bundle\DbalBundle\Config\DbalBundleConfig'
+            $sqlBuilder: '@Elrise\Bundle\DbalBundle\Sql\Builder\SqlBuilderInterface'
 
-    ITech\Bundle\DbalBundle\BulkTestCommands\BulkInsertManyCommand:
+    Elrise\Bundle\DbalBundle\BulkTestCommands\BulkInsertManyCommand:
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
-            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkInserter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
         tags: [ 'console.command' ]
 
-    ITech\Bundle\DbalBundle\BulkTestCommands\BulkUpdateManyCommand:
+    Elrise\Bundle\DbalBundle\BulkTestCommands\BulkUpdateManyCommand:
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
-            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
-            $bulkUpdater: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface'
+            $bulkInserter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkUpdater: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface'
         tags: [ 'console.command' ]
 
-    ITech\Bundle\DbalBundle\BulkTestCommands\BulkUpsertManyCommand:
+    Elrise\Bundle\DbalBundle\BulkTestCommands\BulkUpsertManyCommand:
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
-            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
-            $bulkUpserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface'
+            $bulkInserter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkUpserter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface'
         tags: [ 'console.command' ]
 
-    ITech\Bundle\DbalBundle\BulkTestCommands\BulkDeleteManyCommand:
+    Elrise\Bundle\DbalBundle\BulkTestCommands\BulkDeleteManyCommand:
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
-            $bulkDeleter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface'
-            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkDeleter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface'
+            $bulkInserter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
         tags: [ 'console.command' ]
 
-    ITech\Bundle\DbalBundle\BulkTestCommands\BulkSoftDeleteManyCommand:
+    Elrise\Bundle\DbalBundle\BulkTestCommands\BulkSoftDeleteManyCommand:
         arguments:
             $connection: '@Doctrine\DBAL\Connection'
-            $bulkDeleter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface'
-            $bulkInserter: '@ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
+            $bulkDeleter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface'
+            $bulkInserter: '@Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface'
         tags: [ 'console.command' ]
 ```
 

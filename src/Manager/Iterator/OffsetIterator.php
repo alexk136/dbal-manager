@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Iterator;
+namespace Elrise\Bundle\DbalBundle\Manager\Iterator;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
 use Generator;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
 
 final class OffsetIterator extends AbstractConfigurableIterator implements OffsetIteratorInterface
 {

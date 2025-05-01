@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Sql\Builder\Postgres;
+namespace Elrise\Bundle\DbalBundle\Tests\Sql\Builder\Postgres;
 
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Sql\Builder\PostgresSqlBuilder;
+use Elrise\Bundle\DbalBundle\Sql\Builder\UpsertReplaceType;
+use Elrise\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use InvalidArgumentException;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Sql\Builder\PostgresSqlBuilder;
-use ITech\Bundle\DbalBundle\Sql\Builder\UpsertReplaceType;
-use ITech\Bundle\DbalBundle\Sql\Placeholder\QuestionMarkPlaceholderStrategy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

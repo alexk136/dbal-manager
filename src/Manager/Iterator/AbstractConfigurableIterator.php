@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Iterator;
+namespace Elrise\Bundle\DbalBundle\Manager\Iterator;
 
 use Doctrine\DBAL\Connection;
-use ITech\Bundle\DbalBundle\Config\DbalBundleConfig;
-use ITech\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
+use Elrise\Bundle\DbalBundle\Config\DbalBundleConfig;
+use Elrise\Bundle\DbalBundle\Service\Serialize\DtoDeserializerInterface;
 
 abstract class AbstractConfigurableIterator
 {

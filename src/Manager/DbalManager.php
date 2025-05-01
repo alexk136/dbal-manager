@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager;
+namespace Elrise\Bundle\DbalBundle\Manager;
 
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkInserterInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpdaterInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkUpserterInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\CursorIteratorInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalFinderInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\DbalMutatorInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\OffsetIteratorInterface;
 
 final readonly class DbalManager
 {

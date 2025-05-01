@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Utils;
+namespace Elrise\Bundle\DbalBundle\Utils;
 
 use Doctrine\DBAL\ParameterType;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
 use PDO;
 
 final class DbalTypeGuesser

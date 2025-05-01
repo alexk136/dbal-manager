@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Manager\Bulk;
+namespace Elrise\Bundle\DbalBundle\Manager\Bulk;
 
 use DateTimeImmutable;
+use Elrise\Bundle\DbalBundle\Config\BundleConfigurationInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface;
 use Exception;
-use ITech\Bundle\DbalBundle\Config\BundleConfigurationInterface;
-use ITech\Bundle\DbalBundle\Manager\Contract\BulkDeleterInterface;
 
 final class BulkDeleter extends AbstractDbalWriteExecutor implements BulkDeleterInterface
 {

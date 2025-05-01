@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Config;
+namespace Elrise\Bundle\DbalBundle\Config;
 
 final readonly class DbalBundleConfig implements BundleConfigurationInterface
 {

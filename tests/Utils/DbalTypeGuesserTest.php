@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ITech\Bundle\DbalBundle\Tests\Utils;
+namespace Elrise\Bundle\DbalBundle\Tests\Utils;
 
 use Doctrine\DBAL\ParameterType;
-use ITech\Bundle\DbalBundle\DBAL\DbalParameterType;
-use ITech\Bundle\DbalBundle\Utils\DbalTypeGuesser;
+use Elrise\Bundle\DbalBundle\DBAL\DbalParameterType;
+use Elrise\Bundle\DbalBundle\Utils\DbalTypeGuesser;
 use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
