@@ -43,7 +43,7 @@ abstract class AbstractDbalWriteExecutor implements DbalConfigurableExecutorInte
     }
 
     /**
-     * Важно! Переопределение списка полей следует использовать с осторожностью.
+     * Important! Overriding the field list should be done with caution.
      */
     public function setFieldNames(array $fieldNames): static
     {

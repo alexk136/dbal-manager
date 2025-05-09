@@ -1,32 +1,37 @@
 # Changelog
 
-## [1.0.3](https://github.com/alexk136/dbal-manager/compare/v1.0.2...v1.0.3) (20025-05-01)
-### Добавлено
-- Поддержка PostgreSQL
-- Добавлено кэширование SQL строк для оптимизаци скорости
-- Дополнительные тесты для всех оставшихся методов
+## [1.0.4]
+- Language update
 
-### Исправлено
-- Минорные багфиксы и улучшения
-- Удалены временные/ненужные данные
+---
+
+## [1.0.3](https://github.com/alexk136/dbal-manager/compare/v1.0.2...v1.0.3) (2025-05-01)
+### Added
+- Support for PostgreSQL
+- SQL query caching for speed optimization
+- Additional tests for all remaining methods
+
+### Fixed
+- Minor bug fixes and improvements
+- Removed temporary/unnecessary data
 
 ---
 
 ## [1.0.2](https://github.com/alexk136/dbal-manager/compare/v1.0.1...v1.0.2) (2025-04-24)
-Без изменений
+No changes
 
 ---
 
 ## [1.0.1](https://github.com/alexk136/dbal-manager/compare/v1.0.0...v1.0.1) (2025-04-24)
-### Добавлено
-- Обновлены тестовые команды
-- Улучшен coverage итераторов
+### Added
+- Updated test commands
+- Improved iterator coverage
 
-### Исправлено
-- Минорные багфиксы и улучшения
+### Fixed
+- Minor bug fixes and improvements
 
 ---
 
 ## [1.0.0](https://github.com/alexk136/dbal-manager/releases/tag/v1.0.0) (2025-04-23)
-### Добавлено
-- Первый стабильный релиз `v1.0.0` из ветки `develop`
+### Added
+- First stable release `v1.0.0` from the `develop` branch

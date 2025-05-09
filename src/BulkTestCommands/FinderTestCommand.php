@@ -70,7 +70,7 @@ final class FinderTestCommand extends AbstractTestCommand
                     ->setMaxResults($this->count);
 
                 $rows = iterator_to_array($this->finder->findAll($qb));
-                $output->writeln('➡️ Найдено: ' . count($rows));
+                $output->writeln('➡️ Found: ' . count($rows));
             })(),
             $output,
             [],
@@ -94,8 +94,8 @@ final class FinderTestCommand extends AbstractTestCommand
                 $row = $this->finder->findOne($qb);
 
                 $output->writeln($row
-                    ? '✅ Найдена запись: price = ' . $row['price']
-                    : '❌ Запись не найдена');
+                    ? '✅ Record found: price = ' . $row['price']
+                    : '❌ Record not found');
             })(),
             $output,
             [],
@@ -113,8 +113,8 @@ final class FinderTestCommand extends AbstractTestCommand
                 $row = $this->finder->findById($id, self::TABLE_NAME);
 
                 $output->writeln($row
-                    ? '✅ Найдена запись: ' . json_encode($row)
-                    : '❌ Запись не найдена');
+                    ? '✅ Record found: ' . json_encode($row)
+                    : '❌ Record not found');
             })(),
             $output,
             [],
@@ -131,7 +131,7 @@ final class FinderTestCommand extends AbstractTestCommand
             fn (array $unused) => (function () use ($output, $idList): void {
                 $rows = iterator_to_array($this->finder->findByIdList($idList, self::TABLE_NAME));
 
-                $output->writeln('➡️ Найдено: ' . count($rows));
+                $output->writeln('➡️ Found: ' . count($rows));
             })(),
             $output,
             [],
@@ -154,7 +154,7 @@ LIMIT 2
 SQL;
 
                 $rows = iterator_to_array($this->finder->fetchAllBySql($sql, ['min' => $minPrice]));
-                $output->writeln('➡️ Найдено: ' . count($rows));
+                $output->writeln('➡️ Found: ' . count($rows));
             })(),
             $output,
             [],
@@ -174,8 +174,8 @@ SQL;
                 $row = $this->finder->fetchOneBySql($sql, ['price' => $price]);
 
                 $output->writeln($row
-                    ? '✅ Найдена запись: ' . json_encode($row)
-                    : '❌ Запись не найдена');
+                    ? '✅ Record found: ' . json_encode($row)
+                    : '❌ Record not found');
             })(),
             $output,
             [],

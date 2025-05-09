@@ -12,7 +12,7 @@ parameters:
 
 services:
 
-    # Десериалиторы
+    # Deserializers
     Elrise\Bundle\DbalBundle\Service\Serialize\SymfonyDtoDeserializer:
         arguments:
             $serializer: '@serializer'

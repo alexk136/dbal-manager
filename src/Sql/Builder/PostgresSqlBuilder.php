@@ -232,7 +232,7 @@ final class PostgresSqlBuilder extends AbstractSqlBuilder implements SqlBuilderI
     }
 
     /**
-     * Проверяет имя таблицы, чтобы убедиться, что оно является допустимым идентификатором PostgreSQL.
+     * Checks the table name to ensure it is a valid PostgreSQL identifier.
      */
     private function updateConflictFields(array $replaceFields, array $fieldNames): array
     {

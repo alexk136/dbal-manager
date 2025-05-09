@@ -7,18 +7,18 @@ namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 interface DbalConfigurableExecutorInterface
 {
     /**
-     * Устанавливает размер чанка для пакетных операций.
+     * Sets the chunk size for batch operations.
      */
     public function setChunkSize(int $chunkSize): static;
 
     /**
-     * Устанавливает список полей для операций записи.
-     * Важно использовать с осторожностью, чтобы не нарушить соответствие структурам данных.
+     * Sets the list of fields for write operations.
+     * Use with caution to avoid breaking data structure consistency.
      */
     public function setFieldNames(array $fieldNames): static;
 
     /**
-     * Сбрасывает конфигурацию на дефолтные значения из конфига.
+     * Resets the configuration to the default values from the config.
      */
     public function resetConfig(): static;
 }

@@ -1,91 +1,92 @@
 # Dbal Bundle for Symfony
 
-**Dbal Bundle** — это модуль для Symfony-приложений, предназначенный для высоконагруженных (highload) систем, где стандартные возможности Doctrine ORM становятся узким местом. Бандл предоставляет абстракции и интерфейсы для прямой, эффективной и масштабируемой работы с базой данных на уровне Doctrine DBAL.
+**Dbal Bundle** is a module for Symfony applications designed for high-load systems, where the standard capabilities of Doctrine ORM become a bottleneck. The bundle provides abstractions and interfaces for direct, efficient, and scalable database operations at the Doctrine DBAL level.
+
+## Key Features
+
+- High-performance database operations at the DBAL level.
+- Direct work with DTOs and data arrays, without the ORM layer.
+- Advanced bulk operations: insert, update, upsert, delete.
+- Interfaces for cursor-based and offset-based iterators.
+- Basic Finder/Mutator interfaces for reading and modifying data.
+- Support for multiple database connections.
+- Full control over SQL queries.
+- Support for the following ORMs:
+  - MySQL 8
 
 
-## Основные возможности
+## Architecture
 
-- Высокопроизводительная работа с базой данных на уровне DBAL.
-- Прямая работа с DTO и массивами данных, без слоя ORM.
-- Расширенные bulk-операции: insert, update, upsert, delete.
-- Интерфейсы для cursor-based и offset-based итераторов.
-- Базовые интерфейсы Finder/Mutator для чтения и изменения данных.
-- Поддержка нескольких соединений к БД.
-- Полный контроль над SQL-запросами.
-- Поддержка слеюущих ORM:
-    - MySQL 8
+The Dbal Bundle is built on interfaces and abstractions that are easy to extend and adapt to any needs.
 
+At the core of select operations are **generators (`yield`)**, which allows:
 
-## Архитектура
+- Processing large volumes of data with minimal memory consumption
+- Starting data processing before the entire query completes (lazy loading)
+- Implementing streaming and data transfer — useful when integrating with queues, APIs, synchronization logic, and exports
 
-Dbal Bundle построен на интерфейсах и абстракциях, которые легко расширять и адаптировать под любые нужды.
-
-В основе select операций лежат **генераторы (`yield`)**, что позволяет:
-
-- обрабатывать большие объёмы данных с минимальным потреблением памяти
-- начинать обработку данных до завершения всего запроса (ленивая загрузка)
-- реализовывать потоковую обработку и передачу данных — полезно при интеграции с очередями, API, логикой синхронизации и экспортами
-
-### Основные интерфейсы:
+### Key Interfaces:
 
 #### Finder/Mutator
 
-- `DbalFinderInterface`: чтение данных, доступен маппинг результат в DTO.
-- `DbalMutatorInterface`: обновление, удаление, вставка, есть чистый метеод execute.
+- `DbalFinderInterface`: Data reading, supports mapping results to DTO.
+- `DbalMutatorInterface`: Update, delete, insert, with a raw execute method.
 
-#### Bulk-операции
+#### Bulk Operations
 
-- `BulkInserterInterface`: Вставка одной или нескольких строк в базу данных.
-- `BulkUpdaterInterface`: Обновление ожной\множства строк в базу данных.
-- `BulkUpserterInterface`: Комбинированная операция обновления или вставки строк (upsert) в базу данных.
-- `BulkDeleterInterface`: Удаление строк из базы данных, включая поддержку soft delete.
+- `BulkInserterInterface`: Insert one or more rows into the database.
+- `BulkUpdaterInterface`: Update one or multiple rows in the database.
+- `BulkUpserterInterface`: Combined operation for updating or inserting rows (upsert) into the database.
+- `BulkDeleterInterface`: Delete rows from the database, including support for soft deletes.
 
-#### Итераторы
+#### Iterators
 
-- `CursorIteratorInterface`: поддержка cursor-based чтения, подходит для потоковой обработки.
-- `OffsetIteratorInterface`: стандартная постраничная итерация.
+- `CursorIteratorInterface`: Supports cursor-based reading, suitable for streaming data processing.
+- `OffsetIteratorInterface`: Standard pagination iteration.
 
-#### Вспомогательные классы
+#### Helper Classes
 
-- `DtoFieldExtractor`: извлекает и нормализует поля из DTO.
-- `DbalTypeGuesser`: маппинг PHP-типов в SQL-типы.
-- `MysqlSqlBuilder`: генератор SQL-запросов под MySQL.
+- `DtoFieldExtractor`: Extracts and normalizes fields from DTOs.
+- `DbalTypeGuesser`: Maps PHP types to SQL types.
+- `MysqlSqlBuilder`: SQL query generator for MySQL.
 
 
-## Установка
+## Installation
+
+Run the following command to install the bundle:
 
 ```bash
 composer require itech/dbal-bundle
 ```
 
-Зарегистрируйте бандл в `config/bundles.php`:
+Register the bundle in `config/bundles.php`:
 
 ```php
 Elrise\Bundle\DbalBundle\ItechDbalBundle::class::class => ['all' => true],
 ```
 
 
-## Работа с `DbalManagerFactory`
+## Working with `DbalManagerFactory`
 
-Класс `DbalManagerFactory` позволяет удобно создавать компоненты DBAL-инфраструктуры с возможностью переопределения подключения к базе данных (`Connection`) и конфигурации (`DbalBundleConfig`) на уровне каждого сервиса.
+The `DbalManagerFactory` class allows you to conveniently create DBAL infrastructure components with the ability to override the database connection (`Connection`) and configuration (`DbalBundleConfig`) at the service level.
 
-### Быстрое создание `DbalManager`
+### Quick Creation of `DbalManager`
 
-Если вы хотите использовать все компоненты DBAL сразу — достаточно вызвать метод `createManager()`:
+If you want to use all DBAL components at once, simply call the `createManager()` method:
 
 ```php
 $dbalManager = $factory->createManager();
 ```
 
-Можно передать кастомные `Connection` и `DbalBundleConfig`:
+You can pass custom `Connection` and `DbalBundleConfig`:
 
 ```php
 $dbalManager = $factory->createManager($customConnection, $customConfig);
 ```
 
-### Создание отдельных компонентов
+### Creating Individual Components
 
-Если необходимо использовать один из компонентов отдельно — используйте соответствующий метод:
+If you need to use one of the components separately, use the corresponding method:
 
 ```php
 $finder = $factory->createFinder(...);
@@ -97,17 +98,15 @@ $bulkUpdater = $factory->createBulkUpdater(...);
 $bulkUpserter = $factory->createBulkUpserter(...);
 ```
 
-Для каждого из методов можно указать собственный `Connection` и (опционально) `DbalBundleConfig`:
+For each of these methods, you can specify your custom `Connection` and (optionally) `DbalBundleConfig`:
 
 ```php
 $bulkUpdater = $factory->createBulkUpdater($customConnection, $customConfig);
 ```
 
-Это особенно полезно, если вы работаете с несколькими базами данных или хотите использовать разные стратегии конфигурации.
+This is especially useful if you're working with multiple databases or want to use different configuration strategies.
 
----
-
-### Пример использования в сервисе
+### Example of Using in a Service
 
 ```php
 class MyService
@@ -124,59 +123,59 @@ class MyService
 
 ## Bulk Insert
 
-Модуль поддерживает массовую вставку данных с возможностью указания:
+The module supports bulk data insertion with the ability to specify:
 
-- Названия таблицы
-- Массива строк для вставки
-- Автоматической или ручной генерации ID
-- Явного указания типа значения для каждого поля
+* Table name
+* Array of rows to insert
+* Automatic or manual ID generation
+* Explicitly specifying the value type for each field
 
-### Пример использования
+### Usage Example
 
 ```php
 /** @var BulkInserterInterface $inserter */
 $inserter->insert('user_table', [
     [
-        'id' => IdStrategy::AUTO_INCREMENT, // ID сгенерируется в БД
+        'id' => IdStrategy::AUTO_INCREMENT, // The ID will be generated by the database.
         'email' => ['user1@example.com', ParameterType::STRING],
         'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
     ],
     [
-        'id' => IdStrategy::UUID, // ID будет сгенерирован в коде
+        'id' => IdStrategy::UUID, // The ID will be generated in the code.
         'email' => ['user2@example.com', ParameterType::STRING],
         'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
     ],
     [
-        // ID будет сгенерирован в коде
+        // The ID will be generated in the code.
         'email' => ['user3@example.com', ParameterType::STRING],
         'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
     ],
 ]);
 ```
 
-> Массив `['value', ParameterType::TYPE]` позволяет задать **тип значения**, совместимый с `Doctrine\DBAL\ParameterType`.  
-> Если тип не указан — он будет определён автоматически.
+> The array `['value', ParameterType::TYPE]` allows specifying the **value type** compatible with `Doctrine\DBAL\ParameterType`.
+> If the type is not specified, it will be determined automatically.
 
 ---
 
-### Стратегии генерации ID (`IdStrategy`)
+### ID Generation Strategies (`IdStrategy`)
 
-ID может быть сгенерирован автоматически или задан вручную, в зависимости от стратегии:
+The ID can be generated automatically or set manually, depending on the strategy:
 
-| Стратегия                    | Описание                                                                                                      |
-|------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `IdStrategy::AUTO_INCREMENT` | Значение не указывается — генерируется на уровне БД                                                           |
-| `IdStrategy::UUID`           | Значение генерируется в коде (UUID v7)                                                                        |
-| `IdStrategy::UID`            | Значение генерируется в коде (18 символов)                                                                    |
-| `IdStrategy::INT`            | Значение генерируется как случайное целое число                                                               |
-| `IdStrategy::STRING`         | Генерируется строка (например, на основе `uniqid()`)                                                          |
-| `IdStrategy::DEFAULT`        | Значение неоьходимо использовать для работы с Postgres и генерации ID DEFAULT в рамках Insert\Upsert операции |
+| Strategy                     | Description                                                                                                    |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `IdStrategy::AUTO_INCREMENT` | The value is not specified — it is generated at the database level                                             |
+| `IdStrategy::UUID`           | The value is generated in the code (UUID v7)                                                                   |
+| `IdStrategy::UID`            | The value is generated in the code (18 characters)                                                             |
+| `IdStrategy::INT`            | The value is generated as a random integer                                                                     |
+| `IdStrategy::STRING`         | A string is generated (e.g., based on `uniqid()`)                                                              |
+| `IdStrategy::DEFAULT`        | The value should be used for working with Postgres and generating a DEFAULT ID within Insert/Upsert operations |
 
 ## DbalBulkUpdater
 
-`DbalBulkUpdater` позволяет обновлять от 1 до мнодества строк в ьазе данных.
+`DbalBulkUpdater` Allows updating from 1 to multiple rows in the database.
 
-### 📌 Пример
+### 📌 Example
 
 ```php
 $bulkUpdater
@@ -186,15 +185,15 @@ $bulkUpdater
     ]);
 ```
 
-> По умолчанию в качестве условия используется поле `id`.
-> Обновление происходит с помощью `CASE WHEN ... THEN ...` без множественных запросов.
-> Возвращается количество затронутых строк.
+> By default, the `id` field is used as the condition.
+> The update is performed using `CASE WHEN ... THEN ...` without multiple queries.
+> The number of affected rows is returned.
 
 ## DbalBulkUpserter
 
-`DbalBulkUpserter` позволяет вставлять или обновлять записи по ключевым полям. Если запись с таким `id` уже существует, она будет обновлена; если нет — будет вставлена новая.
+`DbalBulkUpserter` Allows inserting or updating records based on key fields. If a record with the given `id` already exists, it will be updated; if not, a new record will be inserted.
 
-### Пример
+### Example
 
 ```php
 $bulkUpserter
@@ -214,47 +213,47 @@ $bulkUpserter
     ], ['status', 'updated_at']);
 ```
 
-> Обновляемые поля передаются третьим аргументом (`replaceFields`).  
-> `id` может быть сгенерирован автоматически через `IdStrategy::AUTO_INCREMENT`.
+> The fields to be updated are passed as the third argument (`replaceFields`).
+> The `id` can be generated automatically using `IdStrategy::AUTO_INCREMENT`.
 
 ## DbalFinder
 
-`DbalFinder` предоставляет методы для типизированного извлечения данных из базы.
+`DbalFinder` Provides methods for type-safe extraction of data from the database.
 
-### Примеры использования
+### Usage Examples
 
 ```php
-// Получить одну строку по SQL (автоматически добавляется LIMIT 1)
+// Get a single row by SQL (LIMIT 1 is automatically added).
 $result = $finder->fetchOneBySql(
     'SELECT * FROM api_history WHERE id = :id',
     ['id' => $id],
     ApiDto::class
 );
 
-// Получить несколько строк с маппингом в DTO
+// Get multiple rows with mapping to DTO.
 $results = $finder->fetchAllBySql(
     'SELECT * FROM api_history ORDER BY id LIMIT 10',
     [],
     ApiDto::class
 );
 
-// Найти запись по ID
+// Find a record by ID.
 $result = $finder->findById($id, 'api_history', ApiDto::class);
 
-// Найти записи по ID
+// Find records by ID.
 $result = $finder->findByIdList($idList, 'api_history', ApiDto::class);
 ```
 
-> Если не указан класс DTO — вернётся массив.
+> If no DTO class is specified, an array will be returned.
 
 ## DbalMutator
 
-`DbalMutator` предназначен для безопасной вставки и изменения данных в таблицах базы данных.
+`DbalMutator` Designed for safe insertion and modification of data in database tables.
 
-### Примеры использования
+### Usage Examples
 
 ```php
-// Вставка одной строки в таблицу
+// Inserting a single row into a table.
 $mutator->insert('api_history', [
     'type' => ['callback', ParameterType::STRING],
     'merchant_id' => '12345',
@@ -268,13 +267,13 @@ $mutator->insert('api_history', [
     'updated_at' => date('Y-m-d H:i:s'),
 ]);
 ```
-> Поддерживаются поля с типами (например, `['value', ParameterType::STRING]`).
-> Если тип не указан — он будет определён автоматически.
+> Fields with types are supported (e.g., `['value', ParameterType::STRING]`).
+> If the type is not specified, it will be determined automatically.
 
 
 ## ⚠️ Важно
 
-Перед использованием методов `insert()`, `updateMany()`, `upsertMany()` необходимо **обязательно указать актуальные служебные поля** через метод `setFieldNames()` или общий конфиг в поле `fieldNames`:
+Before using the methods `insert()`, `updateMany()`, `upsertMany()`, it is **essential to specify the current service fields** either through the `setFieldNames()` method or a general configuration in the `fieldNames` field.
 
 ```php
 ->setFieldNames([
@@ -286,7 +285,7 @@ $mutator->insert('api_history', [
 
 ## BulkTest Console Commands Setup
 
-Для использования тестовых консольных команд, связанных с массовыми DBAL-операциями (`insertMany`, `updateMany`, `upsertMany`, `deleteMany`, `softDeleteMany`), добавьте следующую конфигурацию в ваш `services.yaml`:
+To use the test console commands related to bulk DBAL operations (insertMany, updateMany, upsertMany, deleteMany, softDeleteMany), add the following configuration to your services.yaml:
 
 ```yaml
 services:
@@ -333,26 +332,26 @@ services:
 
 ---
 
-### Тестовая таблица
+### Test Table
 
-Для запуска команд можно использовать заранее подготовленную таблицу из SQL-файла:
+To run the commands, you can use a pre-prepared table from an SQL file:
 
 ```
-// для MySQL
+// for MySQL
 tests/_db/init.sql
 
-// для PostgreSQL
+// for PostgreSQL
 tests/_db/init_postgres.sql
 ```
 
-Запусти этот SQL-файл вручную в своей тестовой базе перед выполнением команд.
+Manually run this SQL file in your test database before executing the commands.
 
 ---
 
 ### Использование команд
 
 ```bash
-bin/console dbal:test:run-all # Запускакт все команды
+bin/console dbal:test:run-all # Runs all the commands.
 bin/console dbal:test:bulk-insert-many
 bin/console dbal:test:bulk-update-many
 bin/console dbal:test:bulk-upsert-many
@@ -366,13 +365,14 @@ bin/console dbal:test:transaction-service
 bin/console dbal:test:insert
 ```
 
-Каждая команда поддерживает:
-- `--chunk=<int>` — размер чанка для пакетной обработки
-- `--count=<int>` — количество записей (по умолчанию 1000)
-- `--cycle=<int>` — число повторов вставки/обновления/удаления (для бенчмарка)
-- `--track` — включает логирование результатов
+Each command supports:
 
-Пример:
+* `--chunk=<int>` — chunk size for batch processing
+* `--count=<int>` — number of records (default is 1000)
+* `--cycle=<int>` — number of repetitions for insert/update/delete (for benchmarking)
+* `--track` — enables logging of results
+
+Example:
 
 ```bash
 bin/console app:test:bulk-upsert-many --chunk=200 --count=5000 --cycle=5 --track
@@ -380,22 +380,23 @@ bin/console app:test:bulk-upsert-many --chunk=200 --count=5000 --cycle=5 --track
 
 ---
 
-### Логирование результатов
+### Logging Results
 
-Если передан флаг `--track`, команда будет сохранять логи производительности в CSV-файл:
+If the `--track` flag is provided, the command will save performance logs to a CSV file:
 
 ```
 var/log/<тип_теста>_<timestamp>.csv
 ```
 
-Каждая строка в логе содержит:
-- номер итерации
-- время выполнения
-- использование памяти
-- изменение памяти
-- накопленное время
+Each line in the log contains:
 
-## Совместимость
+* Iteration number
+* Execution time
+* Memory usage
+* Memory change
+* Cumulative time
+
+## Compatibility
 
 - PHP 8.2+
 - Symfony 7.0+

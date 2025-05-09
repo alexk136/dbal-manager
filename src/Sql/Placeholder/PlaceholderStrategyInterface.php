@@ -11,15 +11,15 @@ interface PlaceholderStrategyInterface
     public function formatValue(mixed $value): string;
 
     /**
-     * Формирует плоский список параметров и типов для пакетной вставки/обновления.
+     * Generates a flat list of parameters and types for bulk insert/update operations.
      *
-     * @param array $batchRows набор строк для обработки (массив массивов значений)
-     * @param array|null $whereFields список полей для условия WHERE (если требуется)
-     * @param string|null $platform платформа БД для сериализации массивов
+     * @param array $batchRows set of rows to process (array of arrays with values)
+     * @param array|null $whereFields list of fields for the WHERE condition (if required)
+     * @param string|null $platform database platform for serializing arrays
      *
-     * @return array{0: array<int, mixed>, 1: array<int, int>} массив параметров и соответствующих типов
+     * @return array{0: array<int, mixed>, 1: array<int, int>} array of parameters and corresponding types
      *
-     * @throws InvalidArgumentException если $batchRows пустой
+     * @throws InvalidArgumentException if $batchRows is empty
      */
     public function prepareBulkParameterLists(array $batchRows, ?array $whereFields = null, ?string $platform = null): array;
 }

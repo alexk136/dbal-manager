@@ -7,24 +7,24 @@ namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 interface BulkUpdaterInterface
 {
     /**
-     * Обновляет несколько строк в указанной таблице.
+     * Updates multiple rows in the specified table.
      *
-     * @param string $tableName название таблицы
-     * @param array $paramsList список ассоциативных массивов с данными для обновления
-     * @param array|null $whereFields Поля, используемые для формирования условий WHERE. По умолчанию — первичный ключ.
+     * @param string $tableName name of the table
+     * @param array $paramsList list of associative arrays with data to update
+     * @param array|null $whereFields fields used to form the WHERE conditions. Defaults to primary key.
      *
-     * @return int количество обновлённых строк
+     * @return int number of rows updated
      */
     public function updateMany(string $tableName, array $paramsList, ?array $whereFields = null): int;
 
     /**
-     * Обновляет одну строку в указанной таблице.
+     * Updates a single row in the specified table.
      *
-     * @param string $tableName название таблицы
-     * @param array $params ассоциативный массив с данными для обновления, включая значения ключей из whereFields
-     * @param array|null $whereFields Поля, используемые для формирования условий WHERE. По умолчанию — первичный ключ.
+     * @param string $tableName name of the table
+     * @param array $params associative array with data to update, including key values from whereFields
+     * @param array|null $whereFields fields used to form the WHERE conditions. Defaults to primary key.
      *
-     * @return int количество обновлённых строк (0 или 1)
+     * @return int number of rows updated (0 or 1)
      */
     public function updateOne(string $tableName, array $params, ?array $whereFields = null): int;
 }

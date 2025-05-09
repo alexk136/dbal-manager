@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:bulk-delete-many',
-    description: 'Удаляет N записей из таблицы test_data_types через deleteMany().',
+    description: 'Deletes N records from the test_data_types table using deleteMany().',
 )]
 final class BulkDeleteManyCommand extends AbstractTestCommand
 {
@@ -27,7 +27,7 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🗑️ Удаление $this->count записей через bulk delete (чанки по $this->chunkSize), кругов: $this->cycle");
+        $output->writeln("🗑️ Deleting $this->count records via bulk delete (chunks of $this->chunkSize), iterations: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -41,7 +41,7 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
 
         $idsToDelete = $this->getLastInsertedIds($this->count);
 
-        $output->writeln('✅ Вставка завершена.');
+        $output->writeln('✅ Insertion completed.');
 
         $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkDeleter->setChunkSize($this->chunkSize)->deleteMany(self::TABLE_NAME, $idsToDelete),
@@ -55,9 +55,9 @@ final class BulkDeleteManyCommand extends AbstractTestCommand
             ->executeQuery()->fetchOne();
 
         if ($count === 0) {
-            $output->writeln("🔎 Проверка: в базе осталась 0 записей — ✅ OK\n");
+            $output->writeln("🔎 Verification: 0 records remain in the database — ✅ OK\n");
         } else {
-            $output->writeln("⚠️ Проверка: в базе остались записи: $count — ❌ ERROR\n");
+            $output->writeln("⚠️ Verification: records remain in the database: $count — ❌ ERROR\n");
         }
 
         return $result;

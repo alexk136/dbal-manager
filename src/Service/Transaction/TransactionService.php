@@ -8,6 +8,7 @@ use Closure;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\TransactionIsolationLevel;
+use Elrise\Bundle\DbalBundle\Manager\Contract\TransactionServiceInterface;
 use RuntimeException;
 use Throwable;
 

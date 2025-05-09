@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:cursor-iterator',
-    description: 'Читает N записей из таблицы test_data_types через cursor iterator.',
+    description: 'Reads N records from the test_data_types table using a cursor iterator.',
 )]
 final class CursorIteratorCommand extends AbstractTestCommand
 {
@@ -27,7 +27,7 @@ final class CursorIteratorCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("📥 Чтение $this->count записей через cursor iterator (чанки по $this->chunkSize), кругов: $this->cycle");
+        $output->writeln("📥 Reading $this->count records using cursor iterator (chunks of $this->chunkSize), iterations: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -41,7 +41,7 @@ final class CursorIteratorCommand extends AbstractTestCommand
 
         $this->cursorIterator->setChunkSize($this->chunkSize)->setOrderDirection('ASC');
 
-        $output->writeln('✅ Вставка завершена.');
+        $output->writeln('✅ Insertion completed.');
 
         return $this->runBenchmark(
             function (): array {

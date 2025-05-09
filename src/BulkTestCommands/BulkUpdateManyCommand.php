@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:bulk-update-many',
-    description: 'Вставляет N записей и затем обновляет их через updateMany().',
+    description: 'Inserts N records and then updates them using updateMany().',
 )]
 final class BulkUpdateManyCommand extends AbstractTestCommand
 {
@@ -27,7 +27,7 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🔄 Генерация и вставка $this->count записей, затем обновление, кругов: $this->cycle");
+        $output->writeln("🔄 Generating and inserting $this->count records, then updating them, iterations: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -46,7 +46,7 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
             'name' => 'updated_' . uniqid(),
         ], $ids);
 
-        $output->writeln('✅ Вставка завершена.');
+        $output->writeln('✅ Insertion completed.');
 
         $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkUpdater
@@ -68,9 +68,9 @@ final class BulkUpdateManyCommand extends AbstractTestCommand
             ->fetchOne();
 
         if ((int) $updatedCount === $this->count) {
-            $output->writeln("🔎 Проверка: обновлено $updatedCount записей — ✅ OK\n");
+            $output->writeln("🔎 Verification: $updatedCount records updated — ✅ OK\n");
         } else {
-            $output->writeln("⚠️ Проверка: ожидалось обновление $this->count записей, найдено: $updatedCount — ❌ ERROR\n");
+            $output->writeln("⚠️ Verification: expected $this->count records to be updated, found: $updatedCount — ❌ ERROR\n");
         }
 
         return $result;

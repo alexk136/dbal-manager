@@ -7,24 +7,24 @@ namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 interface BulkUpserterInterface
 {
     /**
-     * Выполняет UPSERT (вставку или обновление) нескольких строк в указанной таблице.
+     * Performs an UPSERT (insert or update) of multiple rows in the specified table.
      *
-     * @param string $tableName название таблицы
-     * @param array $paramsList список ассоциативных массивов с данными для вставки/обновления
-     * @param array $replaceFields поля, которые должны быть обновлены при конфликте (обычно по уникальным ключам)
+     * @param string $tableName name of the table
+     * @param array $paramsList list of associative arrays with data to insert/update
+     * @param array $replaceFields fields that should be updated on conflict (usually by unique keys)
      *
-     * @return int количество затронутых строк
+     * @return int number of affected rows
      */
     public function upsertMany(string $tableName, array $paramsList, array $replaceFields): int;
 
     /**
-     * Выполняет UPSERT (вставку или обновление) одной строки в указанной таблице.
+     * Performs an UPSERT (insert or update) of a single row in the specified table.
      *
-     * @param string $tableName название таблицы
-     * @param array $params ассоциативный массив с данными для вставки/обновления
-     * @param array $replaceFields поля, которые должны быть обновлены при конфликте (обычно по уникальным ключам)
+     * @param string $tableName name of the table
+     * @param array $params associative array with data to insert/update
+     * @param array $replaceFields fields that should be updated on conflict (usually by unique keys)
      *
-     * @return int количество затронутых строк (0 или 1)
+     * @return int number of affected rows (0 or 1)
      */
     public function upsertOne(string $tableName, array $params, array $replaceFields): int;
 }

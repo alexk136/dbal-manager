@@ -30,16 +30,13 @@ final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterf
         if ($whereFields !== null) {
             $whereFieldFlip = array_flip($whereFields);
 
-            // Вычисляем все поля для SET (те, которые не входят в whereFields)
             $firstRow = reset($batchRows);
             $setColumns = array_keys(array_diff_key($firstRow, $whereFieldFlip));
 
-            // Сначала собираем параметры для каждого поля SET
             foreach ($setColumns as $column) {
                 foreach ($batchRows as $row) {
                     $whereFieldsData = array_intersect_key($row, $whereFieldFlip);
 
-                    // Для CASE нужно id + значение
                     [$whereValues, $whereTypes] = $this->extractValuesAndTypes($whereFieldsData, $platform);
                     [$value, $type] = $this->extractSingleValueAndType($row[$column], $platform);
 
@@ -52,7 +49,6 @@ final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterf
                 }
             }
 
-            // После всех CASE добавляем id-шники для WHERE
             foreach ($batchRows as $row) {
                 [$whereValues, $whereTypes] = $this->extractValuesAndTypes(array_intersect_key($row, $whereFieldFlip), $platform);
 
@@ -60,7 +56,6 @@ final class QuestionMarkPlaceholderStrategy implements PlaceholderStrategyInterf
                 $mergedTypes = array_merge($mergedTypes, $whereTypes);
             }
         } else {
-            // Если whereFields нет — просто обычная вставка
             foreach ($batchRows as $params) {
                 foreach ($params as $value) {
                     [$paramValue, $paramType] = $this->extractSingleValueAndType($value, $platform);

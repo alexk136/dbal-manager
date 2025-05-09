@@ -9,13 +9,13 @@ use Generator;
 interface CursorIteratorInterface
 {
     /**
-     * Итерация по результатам запроса с использованием подхода на основе курсора.
+     * Iterates over query results using a cursor-based approach.
      *
-     * @param string $tableName название таблицы, из которой выполняется запрос
-     * @param string $cursorField название поля, используемого в качестве курсора для итерации
-     * @param array $initialCursorValues ассоциативный массив начальных значений курсора для старта итерации
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результатов или null для получения сырых данных
-     * @return Generator генератор, возвращающий результаты запроса, каждый из которых представлен объектом или массивом
+     * @param string $tableName name of the table from which the query is executed
+     * @param string $cursorField name of the field used as the cursor for iteration
+     * @param array $initialCursorValues associative array of initial cursor values to start the iteration
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting results, or null for raw data
+     * @return Generator a generator returning query results, each represented as an object or array
      */
     public function iterate(
         string $tableName,
