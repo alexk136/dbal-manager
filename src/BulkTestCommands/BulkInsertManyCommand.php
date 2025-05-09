@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:bulk-insert-many',
-    description: 'Вставляет N записей в таблицу test_data_types через insertMany().',
+    description: 'Inserts N records into the test_data_types table using insertMany().',
 )]
 final class BulkInsertManyCommand extends AbstractTestCommand
 {
@@ -25,7 +25,7 @@ final class BulkInsertManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🔄 Вставка $this->count записей через bulk insert (чанки по $this->chunkSize), кругов вставки: $this->cycle");
+        $output->writeln("🔄 Inserting $this->count records via bulk insert (chunks of $this->chunkSize), insert iterations: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -40,9 +40,9 @@ final class BulkInsertManyCommand extends AbstractTestCommand
             ->executeQuery()->fetchOne();
 
         if ($count === $this->count) {
-            $output->writeln("🔎 Проверка: вставлено $count записей — ✅ OK\n");
+            $output->writeln("🔎 Verification: $count records inserted — ✅ OK\n");
         } else {
-            $output->writeln("⚠️ Проверка: ожидалось $this->count записей, найдено: $count — ❌ ERROR\n");
+            $output->writeln("⚠️ Verification: expected $this->count records, found: $count — ❌ ERROR\n");
         }
 
         return $result;

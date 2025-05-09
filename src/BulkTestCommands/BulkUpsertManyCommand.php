@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:bulk-upsert-many',
-    description: 'Вставляет N записей, затем обновляет их через upsertMany().',
+    description: 'Inserts N records, then updates them using upsertMany().',
 )]
 final class BulkUpsertManyCommand extends AbstractTestCommand
 {
@@ -27,7 +27,7 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🔄 Генерация $this->count записей, вставка 10%, upsert по name, кругов: $this->cycle");
+        $output->writeln("🔄 Generating $this->count records, inserting 10%, upserting by name, iterations: $this->cycle");
 
         $buffer = [];
 
@@ -35,16 +35,13 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
             $buffer[] = $this->generateBulkRow();
         }
 
-        // 1. Вставка первых 10%
         $insertCount = (int) ceil($this->count * 0.1);
         $insertedRows = array_slice($buffer, 0, $insertCount);
         $this->bulkInserter->insertMany(self::TABLE_NAME, $insertedRows);
 
-        // 2. Получаем реальные ID для вставленных 10%
-        $existingRows = $this->getLastInsertedRows($insertCount); // ['id' => ..., 'name' => ...]
+        $existingRows = $this->getLastInsertedRows($insertCount);
         $existingIndex = 0;
 
-        // 3. Прямо в исходном $buffer подставляем id и name для 10-й, 20-й, 30-й и т.д.
         for ($i = 0; $i < $this->count; ++$i) {
             if (($i + 1) % 10 === 0 && isset($existingRows[$existingIndex])) {
                 $buffer[$i]['id'] = $existingRows[$existingIndex]['id'];
@@ -53,7 +50,7 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
             }
         }
 
-        $output->writeln('✅ Вставка завершена.');
+        $output->writeln('✅ Insertion completed.');
 
         $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkUpserter
@@ -73,9 +70,9 @@ final class BulkUpsertManyCommand extends AbstractTestCommand
             ->executeQuery()->fetchOne();
 
         if ($totalCount === $this->count) {
-            $output->writeln("🔎 Проверка: общее количество записей $totalCount — ✅ OK\n");
+            $output->writeln("🔎 Verification: total record count is $totalCount — ✅ OK\n");
         } else {
-            $output->writeln("⚠️ Проверка: ожидалось $this->count записей, найдено: $totalCount — ❌ ERROR\n");
+            $output->writeln("⚠️ Verification: expected $this->count records, found: $totalCount — ❌ ERROR\n");
         }
 
         return $result;

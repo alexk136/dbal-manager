@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:offset-iterator',
-    description: 'Читает N записей из таблицы test_data_types через offset',
+    description: 'Reads N records from the test_data_types table using offset',
 )]
 final class OffsetIteratorCommand extends AbstractTestCommand
 {
@@ -27,7 +27,7 @@ final class OffsetIteratorCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("📄 Пагинация $this->count записей через offset iterator (чанки по $this->chunkSize), кругов: $this->cycle");
+        $output->writeln("📄 Pagination of $this->count records using offset iterator (chunks of $this->chunkSize), iterations: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
         $buffer = [];
@@ -39,7 +39,7 @@ final class OffsetIteratorCommand extends AbstractTestCommand
 
         $this->offsetIterator->setChunkSize($this->chunkSize)->setOrderDirection('ASC');
 
-        $output->writeln('✅ Вставка завершена.');
+        $output->writeln('✅ Insertion completed.');
 
         $sql = 'SELECT * FROM ' . self::TABLE_NAME;
 

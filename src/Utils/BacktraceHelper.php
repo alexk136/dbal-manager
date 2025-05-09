@@ -7,7 +7,7 @@ namespace Elrise\Bundle\DbalBundle\Utils;
 final class BacktraceHelper
 {
     /**
-     * Определяет класс и метод, откуда был вызван код.
+     * Determines the class and method from where the code was called.
      */
     public static function getApplicationCaller(): string
     {
@@ -16,7 +16,6 @@ final class BacktraceHelper
         foreach ($backtrace as $i => $item) {
             $filePath = $item['file'] ?? null;
 
-            // Пропускаем vendor
             if (!$filePath || str_contains($filePath, '/vendor/')) {
                 continue;
             }

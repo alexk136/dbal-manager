@@ -7,7 +7,7 @@ namespace Elrise\Bundle\DbalBundle\BulkTestCommands;
 use Doctrine\DBAL\Connection;
 use Elrise\Bundle\DbalBundle\Enum\DbalFinderInterface;
 use Elrise\Bundle\DbalBundle\Enum\DbalMutatorInterface;
-use Elrise\Bundle\DbalBundle\Service\Transaction\TransactionServiceInterface;
+use Elrise\Bundle\DbalBundle\Manager\Contract\TransactionServiceInterface;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -31,38 +31,37 @@ final class TransactionServiceCommand extends AbstractTestCommand
     {
         $this->truncateTable(self::TABLE_NAME);
 
-        $output->writeln('🚀 Тест транзакции с commit...');
+        $output->writeln('🚀 Transaction test with commit...');
 
         $data = $this->generateNormalRow();
         unset($data['id']);
 
         $this->transactionService->transactional(function () use ($output, $data) {
-            $output->writeln('🟢 Внутри транзакции — commit');
+            $output->writeln('🟢 Inside transaction — commit');
             $this->mutator->insert('test_data_types', $data);
 
             return true;
         });
 
-        $output->writeln('✅ Транзакция успешно завершена');
-
-        $output->writeln('🔥 Тест транзакции с rollback...');
+        $output->writeln('✅ Transaction completed successfully');
+        $output->writeln('🔥 Transaction test with rollback...');
 
         try {
             $this->transactionService->transactional(function () use ($output, $data): void {
-                $output->writeln('🔴 Внутри транзакции — вызов исключения');
+                $output->writeln('🔴 Inside transaction — exception thrown');
                 $this->mutator->insert('test_data_types', $data);
-                throw new RuntimeException('Искусственное исключение для rollback');
+                throw new RuntimeException('Artificial exception for rollback');
             });
         } catch (Throwable $e) {
-            $output->writeln('🛑 Ожидаемый rollback с сообщением: ' . $e->getMessage());
+            $output->writeln('🛑 Expected rollback with message: ' . $e->getMessage());
         }
 
         $count = $this->finder->count(self::TABLE_NAME);
 
         if ($count === 1) {
-            $output->writeln('🔎 Проверка: в базе осталась 1 запись — ✅ OK' . "\n");
+            $output->writeln('🔎 Verification: 1 record remains in the database — ✅ OK' . "\n");
         } else {
-            $output->writeln("⚠️ Проверка: в базе ожидалась 1 запись, найдено: $count — ❌ ERROR\n");
+            $output->writeln("⚠️ Verification: expected 1 record in the database, found: \$count — ❌ ERROR\n");
         }
 
         return Command::SUCCESS;

@@ -7,24 +7,24 @@ namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 interface BulkInserterInterface
 {
     /**
-     * Вставляет несколько строк в указанную таблицу.
+     * Inserts multiple rows into the specified table.
      *
-     * @param string $tableName название таблицы
-     * @param array $paramsList список ассоциативных массивов с данными для вставки
-     * @param bool $isIgnore игнорировать дубликаты при вставке (если поддерживается СУБД)
+     * @param string $tableName name of the table
+     * @param array $paramsList list of associative arrays with data to insert
+     * @param bool $isIgnore whether to ignore duplicates during insertion (if supported by the DBMS)
      *
-     * @return int количество вставленных строк
+     * @return int number of rows inserted
      */
     public function insertMany(string $tableName, array $paramsList, bool $isIgnore = false): int;
 
     /**
-     * Вставляет одну строку в указанную таблицу.
+     * Inserts a single row into the specified table.
      *
-     * @param string $tableName название таблицы
-     * @param array $params ассоциативный массив с данными для вставки
-     * @param bool $isIgnore игнорировать дубликаты при вставке (если поддерживается СУБД)
+     * @param string $tableName name of the table
+     * @param array $params associative array with data to insert
+     * @param bool $isIgnore whether to ignore duplicates during insertion (if supported by the DBMS)
      *
-     * @return int количество вставленных строк
+     * @return int number of rows inserted
      */
     public function insertOne(string $tableName, array $params, bool $isIgnore = false): int;
 }

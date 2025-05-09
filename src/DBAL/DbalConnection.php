@@ -85,7 +85,7 @@ class DbalConnection extends Connection
     }
 
     /**
-     * Добавляет SQL комментарий с контекстом исполнения, если это разрешено и комментарий ещё не добавлен.
+     * Adds an SQL comment with execution context if allowed and the comment has not been added yet.
      *
      * @throws JsonException
      */

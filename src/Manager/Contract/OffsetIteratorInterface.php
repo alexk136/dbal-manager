@@ -9,14 +9,14 @@ use Generator;
 interface OffsetIteratorInterface
 {
     /**
-     * Итерация по результатам запроса с использованием подхода на основе смещения.
+     * Iterates over the query results using an offset-based approach.
      *
-     * @param string $sql SQL-запрос для выполнения
-     * @param array $params ассоциативный массив параметров для подстановки в запрос
-     * @param array $types ассоциативный массив типов параметров для запроса
-     * @param string $indexField название поля, используемого в качестве индекса для итерации
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результатов или null для получения сырых данных
-     * @return Generator генератор, возвращающий результаты запроса, каждый из которых представлен объектом или массивом
+     * @param string $sql SQL query to execute
+     * @param array $params associative array of parameters to bind to the query
+     * @param array $types associative array of parameter types for the query
+     * @param string $indexField name of the field used as the index for iteration
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the results, or null for raw data
+     * @return Generator generator that returns the query results, each represented as an object or array
      */
     public function iterate(
         string $sql,

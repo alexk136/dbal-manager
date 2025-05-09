@@ -9,71 +9,71 @@ use Doctrine\DBAL\Query\QueryBuilder;
 interface DbalFinderInterface
 {
     /**
-     * Находит одну запись, используя предоставленный QueryBuilder, и, при необходимости, преобразует её в DTO-класс.
+     * Finds a single record using the provided QueryBuilder and optionally converts it to a DTO class.
      *
-     * @param QueryBuilder $qb экземпляр QueryBuilder для выполнения запроса
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результата или null для получения сырых данных
-     * @return object|array|null найденная запись в виде объекта, массива или null, если запись не найдена
+     * @param QueryBuilder $qb QueryBuilder instance for executing the query
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the result, or null for raw data
+     * @return object|array|null the found record as an object, array, or null if no record is found
      */
     public function findOne(QueryBuilder $qb, ?string $dtoClass = null): object|array|null;
 
     /**
-     * Находит все записи, используя предоставленный QueryBuilder, и, при необходимости, преобразует их в DTO-класс.
+     * Finds all records using the provided QueryBuilder and optionally converts them to a DTO class.
      *
-     * @param QueryBuilder $qb экземпляр QueryBuilder для выполнения запроса
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результатов или null для получения сырых данных
-     * @return iterable итератор найденных записей, каждая из которых представлена объектом или массивом
+     * @param QueryBuilder $qb QueryBuilder instance for executing the query
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the results, or null for raw data
+     * @return iterable iterator of the found records, each represented as an object or array
      */
     public function findAll(QueryBuilder $qb, ?string $dtoClass = null): iterable;
 
     /**
-     * Находит запись по её ID в указанной таблице и, при необходимости, преобразует её в DTO-класс.
+     * Finds a record by its ID in the specified table and optionally converts it to a DTO class.
      *
-     * @param string|int $id ID записи, которую нужно найти
-     * @param string $tableName название таблицы, в которой выполняется поиск
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результата или null для получения сырых данных
-     * @param string $idField название поля ID в таблице
-     * @return object|array|null найденная запись в виде объекта, массива или null, если запись не найдена
+     * @param string|int $id ID of the record to find
+     * @param string $tableName name of the table to search in
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the result, or null for raw data
+     * @param string $idField name of the ID field in the table
+     * @return object|array|null the found record as an object, array, or null if no record is found
      */
     public function findById(string|int $id, string $tableName, ?string $dtoClass, string $idField): object|array|null;
 
     /**
-     * Находит несколько записей по их ID в указанной таблице и, при необходимости, преобразует их в DTO-класс.
+     * Finds multiple records by their IDs in the specified table and optionally converts them to a DTO class.
      *
-     * @param array $idList список ID записей, которые нужно найти
-     * @param string $tableName название таблицы, в которой выполняется поиск
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результатов или null для получения сырых данных
-     * @param string $idField название поля ID в таблице
-     * @return array массив найденных записей, каждая из которых представлена объектом или массивом
+     * @param array $idList list of IDs of the records to find
+     * @param string $tableName name of the table to search in
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the results, or null for raw data
+     * @param string $idField name of the ID field in the table
+     * @return array an array of found records, each represented as an object or array
      */
     public function findByIdList(array $idList, string $tableName, ?string $dtoClass, string $idField): iterable;
 
     /**
-     * Выполняет SQL-запрос и получает все подходящие записи, при необходимости преобразуя их в DTO-класс.
+     * Executes an SQL query and retrieves all matching records, optionally converting them to a DTO class.
      *
-     * @param string $sql SQL-запрос для выполнения
-     * @param array $params параметры для подстановки в запрос
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результатов или null для получения сырых данных
-     * @return iterable итератор найденных записей, каждая из которых представлена объектом или массивом
+     * @param string $sql SQL query to execute
+     * @param array $params parameters to bind to the query
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the results, or null for raw data
+     * @return iterable iterator of the found records, each represented as an object or array
      */
     public function fetchAllBySql(string $sql, array $params, ?string $dtoClass): iterable;
 
     /**
-     * Выполняет SQL-запрос и получает одну подходящую запись, при необходимости преобразуя её в DTO-класс.
+     * Executes an SQL query and retrieves a single matching record, optionally converting it to a DTO class.
      *
-     * @param string $sql SQL-запрос для выполнения
-     * @param array $params параметры для подстановки в запрос
-     * @param string|null $dtoClass полное имя класса DTO для преобразования результата или null для получения сырых данных
-     * @return object|array|null найденная запись в виде объекта, массива или null, если запись не найдена
+     * @param string $sql SQL query to execute
+     * @param array $params parameters to bind to the query
+     * @param string|null $dtoClass fully qualified class name of the DTO for converting the result, or null for raw data
+     * @return object|array|null the found record as an object, array, or null if no record is found
      */
     public function fetchOneBySql(string $sql, array $params, ?string $dtoClass): object|array|null;
 
     /**
-     * Подсчитывает количество записей в указанной таблице, соответствующих заданным критериям.
+     * Counts the number of records in the specified table that match the given criteria.
      *
-     * @param string $table название таблицы, в которой выполняется подсчёт
-     * @param array $criteria ассоциативный массив критериев для фильтрации записей (например, ['column' => 'value'])
-     * @return int количество записей, соответствующих критериям
+     * @param string $table name of the table to count records in
+     * @param array $criteria associative array of criteria for filtering records (e.g., ['column' => 'value'])
+     * @return int number of records matching the criteria
      */
     public function count(string $table, array $criteria = []): int;
 }

@@ -42,10 +42,10 @@ abstract class AbstractTestCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('count', null, InputOption::VALUE_OPTIONAL, 'Количество записей для вставки', 1)
-            ->addOption('track', null, InputOption::VALUE_OPTIONAL, 'Включить логирование производительности', 0)
-            ->addOption('cycle', null, InputOption::VALUE_OPTIONAL, 'Количество кругов прогона теста', 1)
-            ->addOption('chunk', null, InputOption::VALUE_OPTIONAL, 'Размер чанка для пакетной вставки', 1000);
+            ->addOption('count', null, InputOption::VALUE_OPTIONAL, 'Number of records to insert', 1)
+            ->addOption('track', null, InputOption::VALUE_OPTIONAL, 'Enable performance logging', 0)
+            ->addOption('cycle', null, InputOption::VALUE_OPTIONAL, 'Number of test run iterations.', 1)
+            ->addOption('chunk', null, InputOption::VALUE_OPTIONAL, 'Batch insert chunk size', 1000);
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
@@ -80,9 +80,9 @@ abstract class AbstractTestCommand extends Command
 
     protected function finalize(OutputInterface $output, float $totalElapsed, float $peakMemory, float $avgTime): void
     {
-        $output->writeln(sprintf('⏱ Суммарное время из шагов: %.6f сек', $totalElapsed));
-        $output->writeln(sprintf('📦 Пиковое использование памяти: %.6f МБ', $peakMemory));
-        $output->writeln(sprintf('⚙️ Среднее время на вставку: %.6f сек', $avgTime));
+        $output->writeln(sprintf('⏱ Total time from steps: %.6f seconds', $totalElapsed));
+        $output->writeln(sprintf('📦 Peak memory usage: %.6f MB', $peakMemory));
+        $output->writeln(sprintf('⚙️ Average insert time: %.6f seconds', $avgTime));
         $output->writeln("\n");
 
         if ($this->track) {
@@ -91,7 +91,7 @@ abstract class AbstractTestCommand extends Command
                 "\n# Summary\nTOTAL_ELAPSED,{$this->totalElapsed},PEAK_MEMORY,{$this->peakMemory},AVG_INSERT,{$avgTime}\n",
                 FILE_APPEND,
             );
-            $output->writeln("📄 Детали сохранены в файл: <info>{$this->csvPath}</info>");
+            $output->writeln("📄 Details saved to file: <info>{$this->csvPath}</info>");
         }
     }
 

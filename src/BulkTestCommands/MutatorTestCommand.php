@@ -23,7 +23,7 @@ final class MutatorTestCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('🚀 Тест Mutator...');
+        $output->writeln('🚀 Test Mutator...');
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -54,7 +54,7 @@ final class MutatorTestCommand extends AbstractTestCommand
 
                 $this->mutator->insert(self::TABLE_NAME, $row);
 
-                $output->writeln('✅ Вставка выполнена.');
+                $output->writeln('✅ Insertion completed.');
             })(),
             $output,
             [],
@@ -70,7 +70,7 @@ final class MutatorTestCommand extends AbstractTestCommand
                 $newName = 'Updated Name';
                 $this->mutator->update(self::TABLE_NAME, ['name' => $newName], ['id' => 1]);
 
-                $output->writeln('✅ Обновление выполнено.');
+                $output->writeln('✅ Update completed.');
             })(),
             $output,
             [],
@@ -85,7 +85,7 @@ final class MutatorTestCommand extends AbstractTestCommand
             fn (array $unused) => (function () use ($output): void {
                 $this->mutator->delete(self::TABLE_NAME, ['id' => 1]);
 
-                $output->writeln('✅ Удаление выполнено.');
+                $output->writeln('✅ Deletion completed.');
             })(),
             $output,
             [],
@@ -104,7 +104,7 @@ final class MutatorTestCommand extends AbstractTestCommand
                     'id' => 1,
                 ]);
 
-                $output->writeln("✅ Выполнено. Затронуто строк: $affectedRows");
+                $output->writeln("✅ Completed. Rows affected: $affectedRows");
             })(),
             $output,
             [],

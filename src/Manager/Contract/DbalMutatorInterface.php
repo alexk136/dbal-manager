@@ -7,36 +7,36 @@ namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 interface DbalMutatorInterface
 {
     /**
-     * Вставляет новую запись в указанную таблицу.
+     * Inserts a new record into the specified table.
      *
-     * @param string $table название таблицы, в которую будет вставлена запись
-     * @param array $data ассоциативный массив, где ключи - это названия столбцов, а значения - данные для вставки
+     * @param string $table name of the table to insert the record into
+     * @param array $data associative array where keys are column names and values are the data to insert
      */
     public function insert(string $table, array $data): void;
 
     /**
-     * Выполняет SQL-запрос с указанными параметрами.
+     * Executes an SQL query with the specified parameters.
      *
-     * @param string $sql SQL-запрос для выполнения
-     * @param array $params необязательный ассоциативный массив параметров для подстановки в запрос
-     * @return int количество затронутых строк
+     * @param string $sql SQL query to execute
+     * @param array $params optional associative array of parameters to bind to the query
+     * @return int number of affected rows
      */
     public function execute(string $sql, array $params = []): int;
 
     /**
-     * Обновляет существующие записи в указанной таблице на основе заданных критериев.
+     * Updates existing records in the specified table based on the given criteria.
      *
-     * @param string $table название таблицы, в которой будут обновлены записи
-     * @param array $data ассоциативный массив, где ключи - это названия столбцов, а значения - новые данные
-     * @param array $criteria ассоциативный массив условий для идентификации записей, которые нужно обновить
+     * @param string $table name of the table where records will be updated
+     * @param array $data associative array where keys are column names and values are the new data
+     * @param array $criteria associative array of conditions to identify the records to update
      */
     public function update(string $table, array $data, array $criteria): void;
 
     /**
-     * Удаляет записи из указанной таблицы на основе заданных критериев.
+     * Deletes records from the specified table based on the given criteria.
      *
-     * @param string $table название таблицы, из которой будут удалены записи
-     * @param array $criteria ассоциативный массив условий для идентификации записей, которые нужно удалить
+     * @param string $table name of the table from which records will be deleted
+     * @param array $criteria associative array of conditions to identify the records to delete
      */
     public function delete(string $table, array $criteria): void;
 }

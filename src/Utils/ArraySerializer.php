@@ -10,7 +10,7 @@ use JsonException;
 final class ArraySerializer
 {
     /**
-     * Сериализует массив под конкретную платформу.
+     * Serializes an array for a specific platform.
      *
      * @throws JsonException
      */
@@ -23,16 +23,16 @@ final class ArraySerializer
             )) . '}';
         }
 
-        // По умолчанию — JSON для MySQL и других платформ
+        // By default — JSON for MySQL and other platforms.
         return json_encode($value, JSON_THROW_ON_ERROR);
     }
 
     /**
-     * Экранирует строку для PostgreSQL массива.
+     * Escapes a string for a PostgreSQL array.
      */
     private static function escapePostgresString(string $value): string
     {
-        // Оборачивает строки в кавычки, экранирует кавычки внутри
+        // Wraps strings in quotes, escapes quotes inside.
         return '"' . str_replace('"', '\"', $value) . '"';
     }
 }

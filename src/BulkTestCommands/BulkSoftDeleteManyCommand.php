@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:bulk-soft-delete-many',
-    description: 'Мягко удаляет N записей из таблицы test_data_types через deleteSoftMany().',
+    description: 'Soft deletes N records from the test_data_types table using deleteSoftMany().',
 )]
 final class BulkSoftDeleteManyCommand extends AbstractTestCommand
 {
@@ -27,7 +27,7 @@ final class BulkSoftDeleteManyCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🔄 Soft delete $this->count записей через deleteSoftMany() (чанки по $this->chunkSize), кругов: $this->cycle");
+        $output->writeln("🔄 Soft deleting $this->count records via deleteSoftMany() (chunks of $this->chunkSize), iterations: $this->cycle");
 
         $this->truncateTable(self::TABLE_NAME);
 
@@ -41,7 +41,7 @@ final class BulkSoftDeleteManyCommand extends AbstractTestCommand
 
         $idsToDelete = $this->getLastInsertedIds($this->count);
 
-        $output->writeln('✅ Вставка завершена.');
+        $output->writeln('✅ Insertion completed.');
 
         $result = $this->runBenchmark(
             fn (array $unused) => $this->bulkDeleter->setChunkSize($this->chunkSize)->deleteSoftMany(self::TABLE_NAME, $idsToDelete),
@@ -56,9 +56,9 @@ final class BulkSoftDeleteManyCommand extends AbstractTestCommand
             ->executeQuery()->fetchOne();
 
         if ($deletedCount === $this->count) {
-            $output->writeln("🔎 Проверка: всем записям установлен deleted_at — ✅ OK\n");
+            $output->writeln("🔎 Verification: all records have deleted_at set — ✅ OK\n");
         } else {
-            $output->writeln("⚠️ Проверка: ожидалось $this->count записей с deleted_at, найдено: $deletedCount — ❌ ERROR\n");
+            $output->writeln("⚠️ Verification: expected $this->count records with deleted_at, found: $deletedCount — ❌ ERROR\n");
         }
 
         return $result;

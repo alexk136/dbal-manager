@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'dbal:test:insert',
-    description: 'Вставляет N записей в таблицу test_data_types и логирует производительность.',
+    description: 'Inserts N records into the test_data_types table and logs performance metrics.',
 )]
 final class InsertCommand extends AbstractTestCommand
 {
@@ -25,7 +25,7 @@ final class InsertCommand extends AbstractTestCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("🔄 Вставка {$this->count} записей в таблицу `test_data_types`...");
+        $output->writeln("🔄 Inserting $this->count records into the table `test_data_types`...");
 
         $buffer = [];
 

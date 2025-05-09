@@ -7,42 +7,42 @@ namespace Elrise\Bundle\DbalBundle\Manager\Contract;
 interface BulkDeleterInterface
 {
     /**
-     * Удаляет одну запись из указанной таблицы по ID.
+     * Deletes a single record from the specified table by ID.
      *
-     * @param string $tableName название таблицы
-     * @param string|int $id ID записи для удаления
+     * @param string $tableName name of the table
+     * @param string|int $id ID of the record to delete
      *
-     * @return int количество удаленных записей
+     * @return int number of deleted records
      */
     public function deleteOne(string $tableName, string|int $id): int;
 
     /**
-     * Удаляет несколько записей по массиву ID.
+     * Deletes multiple records by an array of IDs.
      *
-     * @param string $tableName название таблицы
-     * @param array $ids массив ID записей для удаления
+     * @param string $tableName name of the table
+     * @param array $ids array of record IDs to delete
      *
-     * @return int количество удаленных записей
+     * @return int number of deleted records
      */
     public function deleteMany(string $tableName, array $ids): int;
 
     /**
-     * Удаляет несколько записей из указанной таблицы по массиву ID с использованием мягкого удаления.
+     * Soft deletes multiple records from the specified table by an array of IDs.
      *
-     * @param string $tableName название таблицы
-     * @param array $ids массив ID записей для удаления
+     * @param string $tableName name of the table
+     * @param array $ids array of record IDs to delete
      *
-     * @return int количество удаленных записей
+     * @return int number of deleted records
      */
     public function deleteSoftMany(string $tableName, array $ids): int;
 
     /**
-     * Удаляет одну запись из указанной таблицы по ID с использованием мягкого удаления.
+     * Soft deletes a single record from the specified table by ID.
      *
-     * @param string $tableName название таблицы
-     * @param string|int $ids ID записи для удаления
+     * @param string $tableName name of the table
+     * @param string|int $id ID of the record to delete
      *
-     * @return int количество удаленных записей
+     * @return int number of deleted records
      */
     public function deleteSoftOne(string $tableName, string|int $ids): int;
 }

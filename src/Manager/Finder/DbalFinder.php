@@ -117,7 +117,7 @@ final readonly class DbalFinder implements DbalFinderInterface
     }
 
     /**
-     * Выполнить SELECT и получить массив DTO.
+     * Executes a SELECT query and retrieves the results as an array of DTOs.
      * @throws Exception
      */
     public function fetchAllBySql(string $sql, array $params = [], ?string $dtoClass = null): iterable
@@ -132,7 +132,7 @@ final readonly class DbalFinder implements DbalFinderInterface
     }
 
     /**
-     * Выполнить SELECT и получить одну запись.
+     * Executes a SELECT query and retrieves a single record.
      * @throws Exception
      */
     public function fetchOneBySql(string $sql, array $params = [], ?string $dtoClass = null): object|array|null

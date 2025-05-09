@@ -7,16 +7,16 @@ namespace Elrise\Bundle\DbalBundle\Utils;
 final class IdGenerator
 {
     /**
-     * Генерирует уникальный ID на основе PID и uniqid.
+     * Generates a unique ID based on PID and uniqid.
      */
     public static function generateUniqueId(): string
     {
         $pid = getmypid();
-        $uniq = uniqid('', true); // true — добавляет дополнительную энтропию
+        $uniq = uniqid('', true); // true — adds extra entropy.
 
-        // Возьмем последние 5 цифр PID, и хешируем uniqid
+        // Take the last 5 digits of the PID and hash the uniqid.
         $pidPart = str_pad((string) ($pid % 100000), 5, '0', STR_PAD_LEFT);
-        $uniqPart = substr(md5($uniq), -13); // можно и sha1/uuid, но md5 короче
+        $uniqPart = substr(md5($uniq), -13); // You can use sha1/uuid, but md5 is shorter.
 
         return $pidPart . $uniqPart;
     }

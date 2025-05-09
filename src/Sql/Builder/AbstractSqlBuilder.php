@@ -18,7 +18,7 @@ abstract class AbstractSqlBuilder implements SqlBuilderInterface
     }
 
     /**
-     * Проверяет имя таблицы, чтобы убедиться, что оно является допустимым идентификатором PostgreSQL.
+     * Checks the table name to ensure it is a valid PostgreSQL identifier.
      *
      * @throws InvalidArgumentException
      */
@@ -30,7 +30,8 @@ abstract class AbstractSqlBuilder implements SqlBuilderInterface
     }
 
     /**
-     * Проверяет имена полей, чтобы убедиться, что они являются допустимыми идентификаторами PostgreSQL.
+     * Checks the field names to ensure they are valid PostgreSQL identifiers.
+     *
      * @param array<string> $fields
      * @throws InvalidArgumentException
      */
@@ -44,7 +45,7 @@ abstract class AbstractSqlBuilder implements SqlBuilderInterface
     }
 
     /**
-     * Ограничивает размер SQL-кеша, чтобы предотвратить проблемы с памятью.
+     * Limits the size of the SQL cache to prevent memory issues.
      */
     protected function limitCacheSize(): void
     {

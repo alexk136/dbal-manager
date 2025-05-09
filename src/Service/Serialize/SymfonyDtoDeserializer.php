@@ -28,13 +28,13 @@ final readonly class SymfonyDtoDeserializer implements DtoDeserializerInterface
                 $context[AbstractNormalizer::GROUPS] = [$this->defaultGroup];
             }
 
-            // Есть конструктор → используем через сериализатор
+            // There is a constructor → we use it through the serializer.
             if ($reflection->getConstructor() !== null) {
                 // Используем Symfony Serializer через конструктор
                 return $this->serializer->denormalize($data, $type, null, $context);
             }
 
-            // Без конструктора → создаем объект и проставляем значения напрямую
+            // Without a constructor → we create the object and set the values directly.
             $object = $reflection->newInstanceWithoutConstructor();
 
             foreach ($data as $field => $value) {
@@ -45,7 +45,7 @@ final readonly class SymfonyDtoDeserializer implements DtoDeserializerInterface
                     continue;
                 }
 
-                // fallback: прямой доступ к свойству, если оно есть и публичное или приватное (в крайних случаях)
+                // Fallback: direct access to the property if it exists and is public or private (in extreme cases).
                 if ($reflection->hasProperty($field)) {
                     $property = $reflection->getProperty($field);
                     $property->setAccessible(true);
@@ -53,12 +53,12 @@ final readonly class SymfonyDtoDeserializer implements DtoDeserializerInterface
                     continue;
                 }
 
-                throw new RuntimeException("Ошибка при мапинге поля: '{$field}' тиа {$type}");
+                throw new RuntimeException("Error during field mapping: '{$field}' тиа {$type}");
             }
 
             return $object;
         } catch (ReflectionException $e) {
-            throw new RuntimeException("Ошибка при десериализации DTO: {$e->getMessage()}", previous: $e);
+            throw new RuntimeException("Error during DTO deserialization: {$e->getMessage()}", previous: $e);
         }
     }
 }
