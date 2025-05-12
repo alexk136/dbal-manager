@@ -1,7 +1,24 @@
 # Changelog
 
-## [1.0.4]
-- Language update
+## [1.0.7]() (2025-05-12)
+- Add MIT Licence
+
+---
+
+## [1.0.6](https://github.com/alexk136/dbal-manager/compare/v1.0.5...v1.0.6) (2025-05-10)
+- Move IdStrategy to new path
+- Update README
+
+---
+
+## [1.0.5](https://github.com/alexk136/dbal-manager/compare/v1.0.4...v1.0.5) (2025-05-01)
+- Move IdStrategy to new path 
+- Update README
+
+---
+
+## [1.0.4](https://github.com/alexk136/dbal-manager/compare/v1.0.3...v1.0.4) (2025-05-01)
+- Move to new namespace Elrise\
 
 ---
 
