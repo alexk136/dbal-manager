@@ -10,7 +10,7 @@ use Elrise\Bundle\DbalBundle\DBAL\Type\FloatArrayType;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ItechDbalBundle extends Bundle
+class ElriseDbalBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {

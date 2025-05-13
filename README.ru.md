@@ -55,13 +55,13 @@ Dbal Bundle построен на интерфейсах и абстракция
 ## Установка
 
 ```bash
-composer require itech/dbal-bundle
+composer require alexk136/dbal-bundle
 ```
 
 Зарегистрируйте бандл в `config/bundles.php`:
 
 ```php
-Elrise\Bundle\DbalBundle\ItechDbalBundle::class::class => ['all' => true],
+Elrise\Bundle\DbalBundle\ElriseDbalBundle::class::class => ['all' => true],
 ```
 
 

@@ -56,13 +56,13 @@ At the core of select operations are **generators (`yield`)**, which allows:
 Run the following command to install the bundle:
 
 ```bash
-composer require itech/dbal-bundle
+composer require alexk136/dbal-bundle
 ```
 
 Register the bundle in `config/bundles.php`:
 
 ```php
-Elrise\Bundle\DbalBundle\ItechDbalBundle::class::class => ['all' => true],
+Elrise\Bundle\DbalBundle\ElriseDbalBundle::class::class => ['all' => true],
 ```
 
 
@@ -401,4 +401,4 @@ Each line in the log contains:
 - PHP 8.2+
 - Symfony 7.0+
 - Doctrine DBAL 3.6+
-- MySQL 5.7 / PostgreSQL 16
+- MySQL 5.7 / 8 / PostgreSQL 16
