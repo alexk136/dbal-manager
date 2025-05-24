@@ -1,5 +1,5 @@
 {
-  "name": "alexk136/dbal-bundle",
+  "name": "elrise/dbal-bundle",
   "description": "High-performance DBAL operations bundle for Symfony with support for bulk insert, update, upsert, delete and streaming queries.",
   "type": "symfony-bundle",
   "license": "proprietary",
